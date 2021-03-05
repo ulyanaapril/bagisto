@@ -81,8 +81,6 @@ class ResourceController extends Controller
             $results = $query->get();
         }
 
-        return $this->_config['resource'];
-
         return $this->_config['resource']::collection($results);
     }
 
