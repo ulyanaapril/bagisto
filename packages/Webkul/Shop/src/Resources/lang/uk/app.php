@@ -556,7 +556,7 @@ return [
             'order-summary' => 'Підсумок замовлення',
             'sub-total' => 'Елементи',
             'grand-total' => 'Загальний підсумок',
-            'delivery-charge' => "Вартість доставки",
+            'delivery-charges' => "Вартість доставки",
             'tax' => 'податок',
             'discount' => 'Знижка',
             'price' => "price",

@@ -21,5 +21,10 @@ Route::group(['prefix' => 'api-1c'], function ($router) {
             'authorization_required' => true
         ]);
 
+        Route::post('products/create', 'ResourceController@store')->defaults('_config', [
+            'repository' => 'Webkul\Product\Repositories\ProductRepository',
+            'authorization_required' => true
+        ]);
+
     });
 });
