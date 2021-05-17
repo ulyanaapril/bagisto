@@ -282,7 +282,8 @@ return [
         Webkul\SocialLogin\Providers\SocialLoginServiceProvider::class,
         Webkul\DebugBar\Providers\DebugBarServiceProvider::class,
         Webkul\Marketing\Providers\MarketingServiceProvider::class,
-        Red\API\Providers\ApiServiceProvider::class
+        Red\API\Providers\ApiServiceProvider::class,
+        Red\Admin\Providers\AdminServiceProvider::class
     ],
 
     /*

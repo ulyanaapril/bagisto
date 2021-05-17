@@ -137,8 +137,11 @@ class ProductFlatRepository extends Repository
 
             return $loadedCategoryAttributes[$category->id] = $attributes;
         } else {
+            $attributes = app('Webkul\Attribute\Repositories\AttributeRepository')->getModel()->whereIn('id', [11])->get();//price
 
-            return $loadedCategoryAttributes[$category->id] = $category->filterableAttributes;
+            return $loadedCategoryAttributes[$category->id] = $attributes;
+
+//            return $loadedCategoryAttributes[$category->id] = $category->filterableAttributes;
         }
     }
 

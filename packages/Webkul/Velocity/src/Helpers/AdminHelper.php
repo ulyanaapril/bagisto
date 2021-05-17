@@ -48,7 +48,8 @@ class AdminHelper
         $data = request()->all();
 
         if (! $category instanceof \Webkul\Category\Contracts\Category) {
-            $category = $this->categoryRepository->findOrFail($category);
+            $id = !empty($category->id) ? $category->id : $category;
+            $category = $this->categoryRepository->findOrFail($id);
         }
 
         $category = $this->uploadImage($category, $data, 'category_icon_path');

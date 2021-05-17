@@ -112,7 +112,8 @@
         "Webkul\\SocialLogin\\": "packages/Webkul/SocialLogin/src",
         "Webkul\\DebugBar\\": "packages/Webkul/DebugBar/src",
         "Webkul\\Marketing\\": "packages/Webkul/Marketing/src",
-        "Red\\API\\": "packages/Red/API/src"
+        "Red\\API\\": "packages/Red/API/src",
+        "Red\\Admin\\": "packages/Red/Admin/src"
       }
     },
     "autoload-dev": {
