@@ -391,7 +391,7 @@ class ImportController extends Controller
 
         $category = Category::where(['red_id' => $article['category_id']])->first();
         if (!empty($category)) {
-            $article['categories'] = $category->id;
+            $article['categories'] = $this->parentCategoryList($category);
         }
         $article['name'] = $article['model'] . ' ' . $article['brand'];
         $article['short_description'] = $article['short_text'];
@@ -415,6 +415,24 @@ class ImportController extends Controller
         ];
 
         return $article;
+    }
+
+
+    /**
+     * @param $category
+     * @param array $ids
+     * @return array
+     */
+    private function parentCategoryList($category, &$ids = []) {
+        $ids[] = $category->id;
+        if (!empty($category->parent_id && $category->parent->id !== 1)) {
+            $parentCategory = Category::where(['id' => $category->parent_id])->first();
+            if (!empty($parentCategory)) {
+                $this->parentCategoryList($parentCategory, $ids);
+            }
+        }
+        return $ids;
+
     }
 
     /**
