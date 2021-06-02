@@ -115,7 +115,7 @@
         "Red\\API\\": "packages/Red/API/src",
         "Red\\Admin\\": "packages/Red/Admin/src",
         "Red\\NP\\": "packages/Red/NP/src",
-        "Red\\Ukrposhta\\": "packages/Red/NP/src"
+        "Red\\Ukrposhta\\": "packages/Red/Ukrposhta/src"
       }
     },
     "autoload-dev": {

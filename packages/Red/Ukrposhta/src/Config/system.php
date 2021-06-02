@@ -2,8 +2,8 @@
 
 return [
     [
-        'key'    => 'sales.carriers.urkposhta',
-        'name'   => 'Urkposhta',
+        'key'    => 'sales.carriers.ukrposhta',
+        'name'   => 'Ukrposhta',
         'sort'   => 1,
         'fields' => [
             [

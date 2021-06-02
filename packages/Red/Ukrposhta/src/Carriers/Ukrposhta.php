@@ -1,20 +1,20 @@
 <?php
 
-namespace Red\Urkposhta\Carriers;
+namespace Red\Ukrposhta\Carriers;
 
 use Config;
 use Webkul\Shipping\Carriers\AbstractShipping;
 use Webkul\Checkout\Models\CartShippingRate;
 use Webkul\Shipping\Facades\Shipping;
 
-class Urkposhta extends AbstractShipping
+class Ukrposhta extends AbstractShipping
 {
     /**
      * Shipping method code
      *
      * @var string
      */
-    protected $code  = 'urkposhta';
+    protected $code  = 'ukrposhta';
 
     /**
      * Returns rate for shipping method
@@ -29,9 +29,9 @@ class Urkposhta extends AbstractShipping
 
         $object = new CartShippingRate;
 
-        $object->carrier = 'urkposhta';
+        $object->carrier = 'ukrposhta';
         $object->carrier_title = $this->getConfigData('title');
-        $object->method = 'urkposhta';
+        $object->method = 'ukrposhta_ukrposhta';
         $object->method_title = $this->getConfigData('title');
         $object->method_description = $this->getConfigData('description');
         $object->price = 0;

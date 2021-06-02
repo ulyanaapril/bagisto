@@ -1,10 +1,10 @@
 <?php
 
-namespace Red\Urkposhta\Providers;
+namespace Red\Ukrposhta\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class UrkposhtaServiceProvider extends ServiceProvider
+class UkrposhtaServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
