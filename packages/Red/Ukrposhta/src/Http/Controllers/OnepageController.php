@@ -154,11 +154,15 @@ class OnepageController extends Controller
     {
         $shippingMethod = request()->get('shipping_method');
 
+        $postcode = request()->get('postcode');
+        $state = request()->get('state');
+        $city = request()->get('city');
+        $district = request()->get('district');
+        $street = request()->get('street');
+        $house = request()->get('house');
+        $apartment = request()->get('apartment');
 
-        $cityRef = request()->get('city_ref');
-        $warehouseRef = request()->get('warehouse_ref');
-
-        if (empty($cityRef) || empty($warehouseRef)) {
+        if (empty($postcode) || empty($state) || empty($city) || empty($district) || empty($street) || empty($house) || empty($apartment)) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
         }
 
@@ -201,8 +205,13 @@ class OnepageController extends Controller
     */
     public function saveOrder()
     {
-        $cityRef = request()->get('city_ref');
-        $warehouseRef = request()->get('warehouse_ref');
+        $postcode = request()->get('postcode');
+        $state = request()->get('state');
+        $city = request()->get('city');
+        $district = request()->get('district');
+        $street = request()->get('street');
+        $house = request()->get('house');
+        $apartment = request()->get('apartment');
 
         if (Cart::hasError()) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
@@ -230,8 +239,17 @@ class OnepageController extends Controller
                 'address_type' => OrderAddress::ADDRESS_TYPE_SHIPPING
             ])->first();
             if (!empty($customerAddress)) {
-                $customerAddress->fillable(array_merge($customerAddress->getFillable(),["warehouse_ref", "city_ref"]));
-                $customerAddress->fill(['city_ref' => $cityRef, 'warehouse_ref' => $warehouseRef])->save();
+                $customerAddress->fillable(array_merge($customerAddress->getFillable(),['district', 'street', 'house', 'apartment']));
+                $customerAddress->fill(
+                    [
+                        'postcode' => $postcode,
+                        'state' => $state,
+                        'city' => $city,
+                        'district' => $district,
+                        'street' => $street,
+                        'house' => $house,
+                        'apartment' => $apartment
+                    ])->save();
             }
         }
 

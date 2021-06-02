@@ -550,7 +550,11 @@ return [
             'password' => 'Пароль',
             'login-exist-message' => 'У вас вже є обліковий запис у нас, увійдіть або продовжуйте як гість.',
             'enter-coupon-code' => 'Ввести код купона',
-            'warehouse' => 'Відділення'
+            'warehouse' => 'Відділення',
+            'district' => 'Район',
+            'street' => 'Вулиця',
+            'house' => 'Будинок',
+            'apartment' => 'Квартира'
         ],
 
         'total' => [

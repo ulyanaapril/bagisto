@@ -140,6 +140,13 @@
                         countryStates: [],
                         selected_city_ref: '',
                         selected_warehouse_ref: '',
+                        selected_postcode: '',
+                        selected_state: '',
+                        selected_city: '',
+                        selected_district: '',
+                        selected_street: '',
+                        selected_house: '',
+                        selected_apartment: '',
 
                         step_numbers: {
                             'information': 1,
@@ -167,8 +174,6 @@
                 },
 
                 created: function () {
-                    this.fetchCities();
-
                     this.fetchCountries();
 
                     this.fetchCountryStates();
@@ -203,16 +208,6 @@
                 },
 
                 methods: {
-                    fetchCities: function () {
-                        let countriesEndPoint = `${this.$root.baseUrl}/red/np/cities`;
-                        // let countriesEndPoint = `${this.$root.baseUrl}/api/countries?pagination=0`;
-
-                        this.$http.get(countriesEndPoint)
-                            .then(response => {
-                                this.cities = response.data;
-                            })
-                            .catch(function (error) {});
-                    },
                     navigateToStep: function (step) {
                         if (step <= this.completed_step) {
                             this.current_step = step
@@ -427,7 +422,7 @@
                             });
                         }
 
-                        this.$http.post("{{ route('red.checkout.save-address') }}", this.address)
+                        this.$http.post(`${this.$root.baseUrl}/red/checkout/np/save-address`, this.address)
                             .then(response => {
                                 this.disable_button = false;
                                 this.isPlaceOrderEnabled = true;
@@ -463,11 +458,17 @@
 
                     saveShipping: async function () {
                         this.disable_button = true;
-
-                        this.$http.post("{{ route('red.checkout.save-shipping') }}", {
+                        this.$http.post(`${this.$root.baseUrl}/red/checkout/${this.selected_shipping_method}/save-shipping`, {
                             'shipping_method': this.selected_shipping_method,
                             'city_ref': this.selected_city_ref,
-                            'warehouse_ref': this.selected_warehouse_ref
+                            'warehouse_ref': this.selected_warehouse_ref,
+                            'postcode' : this.selected_postcode,
+                            'state' : this.selected_state,
+                            'city' : this.selected_city,
+                            'district' : this.selected_district,
+                            'street' : this.selected_street,
+                            'house' : this.selected_house,
+                            'apartment' : this.selected_apartment
                         })
                             .then(response => {
                                 this.$root.hideLoader();
@@ -532,10 +533,17 @@
 
                             this.$root.showLoader();
 
-                            this.$http.post("{{ route('red.checkout.save-order') }}", {
+                            this.$http.post(`${this.$root.baseUrl}/red/checkout/${this.selected_shipping_method}/save-order`, {
                                 '_token': "{{ csrf_token() }}",
                                 'city_ref': this.selected_city_ref,
-                                'warehouse_ref': this.selected_warehouse_ref
+                                'warehouse_ref': this.selected_warehouse_ref,
+                                'postcode' : this.selected_postcode,
+                                'state' : this.selected_state,
+                                'city' : this.selected_city,
+                                'district' : this.selected_district,
+                                'street' : this.selected_street,
+                                'house' : this.selected_house,
+                                'apartment' : this.selected_apartment
                             })
                             .then(response => {
                                 if (response.data.success) {
@@ -618,25 +626,25 @@
                                 city: [''],
                             },
                         },
-
                         countries: [],
-
                         city: '',
-
+                        city_ref: '',
                         warehouse: '',
-
+                        street: '',
+                        house: '',
+                        apartment: '',
+                        postcode: '',
+                        state: '',
+                        district: '',
                         templateRender: null,
-
                         selected_shipping_method: '',
-
                         first_iteration : true,
-
                         warehouses: []
                     }
                 },
 
                 // watch: {
-                //     city: function (value) {
+                //     city_ref: function (value) {
                 //         // this.methodSelected();
                 //     },
                 //     warehouse: function (value) {
@@ -668,7 +676,7 @@
 
                 methods: {
                     initSelect2: function() {
-                        var citiesUrl = `${this.$root.baseUrl}/red/np/cities`;
+                        var citiesUrl = `${this.$root.baseUrl}/red/${this.selected_shipping_method}/cities`;
                         var vue = this;
                         $('.delivery-' + this.selected_shipping_method).removeAttr('hidden');
                         $('.delivery-ajax-city-' + this.selected_shipping_method).select2({
@@ -689,7 +697,7 @@
                                 cache: true
                             }
                         }).on("change", function (e) {
-                            vue.city = $(e.target).val();
+                            vue.city_ref = $(e.target).val();
                             vue.fetchWarehouses();
                             vue.warehouse = '';
                             vue.$parent.validateForm('shipping-form');
@@ -706,7 +714,7 @@
                     },
 
                     fetchWarehouses: function () {
-                        var warehousesUrl = `${this.$root.baseUrl}/red/np/warehouses?q=` + this.city;
+                        var warehousesUrl = `${this.$root.baseUrl}/red/${this.selected_shipping_method}/warehouses?q=` + this.city_ref;
 
                         this.$http.get(warehousesUrl)
                             .then(response => {
@@ -723,8 +731,15 @@
 
                         this.$emit('onShippingMethodSelected', this.selected_shipping_method);
 
-                        this.$parent.selected_city_ref = this.city;
+                        this.$parent.selected_city_ref = this.city_ref;
                         this.$parent.selected_warehouse_ref = this.warehouse;
+                        this.$parent.selected_postcode = this.postcode;
+                        this.$parent.selected_state = this.state;
+                        this.$parent.selected_city = this.city;
+                        this.$parent.selected_district = this.district;
+                        this.$parent.selected_street = this.street;
+                        this.$parent.selected_house = this.house;
+                        this.$parent.selected_apartment = this.apartment;
 
                         eventBus.$emit('after-shipping-method-selected', this.selected_shipping_method);
                     }
