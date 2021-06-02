@@ -113,7 +113,9 @@
         "Webkul\\DebugBar\\": "packages/Webkul/DebugBar/src",
         "Webkul\\Marketing\\": "packages/Webkul/Marketing/src",
         "Red\\API\\": "packages/Red/API/src",
-        "Red\\Admin\\": "packages/Red/Admin/src"
+        "Red\\Admin\\": "packages/Red/Admin/src",
+        "Red\\NP\\": "packages/Red/NP/src",
+        "Red\\Ukrposhta\\": "packages/Red/NP/src"
       }
     },
     "autoload-dev": {

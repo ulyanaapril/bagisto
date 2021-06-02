@@ -283,7 +283,9 @@ return [
         Webkul\DebugBar\Providers\DebugBarServiceProvider::class,
         Webkul\Marketing\Providers\MarketingServiceProvider::class,
         Red\API\Providers\ApiServiceProvider::class,
-        Red\Admin\Providers\AdminServiceProvider::class
+        Red\Admin\Providers\AdminServiceProvider::class,
+        Red\NP\Providers\NPServiceProvider::class,
+        Red\Ukrposhta\Providers\UkrposhtaServiceProvider::class
     ],
 
     /*
