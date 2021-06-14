@@ -37,19 +37,13 @@ class ResourceController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function cities(Request $request) {
-        if (!empty($q = $request->get('q'))) {
-            $np = new NovaPoshta('uk');
-            $cities = $np->getCities(0, $q);
-            $cities = array_map(function($city) {
-                return array(
-                    'id' => $city['Ref'],
-                    'text' => $city['Description']
-                );
-            }, $cities['data']);
-
-            return response()->json($cities);
-        }
+    public function cities(Request $request)
+    {
+        return response()->json(
+            [
+                ['id' => '', 'text' => '']
+            ]
+        );
 
     }
 
@@ -58,18 +52,11 @@ class ResourceController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function warehouses(Request $request) {
-        if (!empty($search = $request->get('q'))) {
-            $np = new NovaPoshta('uk');
-            $cities = $np->getWarehouses($search);
-            $cities = array_map(function($city) {
-                return array(
-                    'id' => $city['Ref'],
-                    'text' => $city['Description']
-                );
-            }, $cities['data']);
-
-            return response()->json($cities);
-        }
+        return response()->json(
+            [
+                ['id' => '', 'text' => '']
+            ]
+        );
     }
 
 }

@@ -183,8 +183,34 @@
 
                                             <div class="section-content">
                                                 @include ('admin::sales.address', ['address' => $order->shipping_address])
-
                                                 {!! view_render_event('sales.order.shipping_address.after', ['order' => $order]) !!}
+
+                                                @if ($order->shipping_method == 'np' || $order->shipping_method == 'justin')
+                                                    {{ !empty($cityName) ? __('admin::app.sales.orders.city') . ': ' . $cityName : '' }}<br>
+                                                    {{ !empty($warehouseName) ? $warehouseName : ''}}<br>
+                                                @else
+                                                    @if(!empty($address->postcode) && !empty($address->city))
+                                                        {{ __('admin::app.sales.orders.postcode') }} : {{ $address->postcode }}<br>
+                                                        {{ __('admin::app.sales.orders.city') }} : {{ $address->city }}<br>
+                                                    @endif
+                                                    @if (!empty($address->state))
+                                                        {{ $address->state }} {{ __('admin::app.sales.orders.state') }},
+                                                    @endif
+                                                    @if (!empty($address->district))
+                                                        {{$address->district}} {{ __('admin::app.sales.orders.district') }},
+                                                    @endif
+                                                    @if (!empty($address->street))
+                                                        {{ __('admin::app.sales.orders.st') }} {{ $address->street }}
+                                                    @endif
+                                                    @if (!empty($address->house))
+                                                        {{ __('admin::app.sales.orders.bld') }} {{ $address->house }}
+                                                    @endif
+                                                    @if(!empty($address->apartment))
+                                                        {{ __('admin::app.sales.orders.apt') }} {{ $address->apartment }}
+                                                    @endif
+                                                    <br>
+                                                @endif
+
                                             </div>
                                         </div>
                                     @endif

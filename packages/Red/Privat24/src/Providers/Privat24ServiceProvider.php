@@ -1,10 +1,10 @@
 <?php
 
-namespace Red\Ukrposhta\Providers;
+namespace Red\Privat24\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class UkrposhtaServiceProvider extends ServiceProvider
+class Privat24ServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
@@ -13,8 +13,8 @@ class UkrposhtaServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         include __DIR__ . '/../Http/routes.php';
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'privat24');
     }
 
     /**
@@ -35,7 +35,7 @@ class UkrposhtaServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/carriers.php', 'carriers'
+            dirname(__DIR__) . '/Config/paymentmethods.php', 'paymentmethods'
         );
 
         $this->mergeConfigFrom(

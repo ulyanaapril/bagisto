@@ -1,6 +1,6 @@
 <?php
 
-namespace Red\Ukrposhta\Http\Controllers;
+namespace Red\Justin\Http\Controllers;
 
 use Illuminate\Support\Facades\Event;
 use Webkul\Sales\Models\OrderAddress;
@@ -117,6 +117,11 @@ class OnepageController extends Controller
         }
 
         $data['billing']['company_name'] = !empty($data['billing']['company_name']) ? $data['billing']['company_name'] : 'Company';
+//        $data['billing']['country'] = !empty($data['billing']['country']) ? $data['billing']['country'] : 'UA';
+//        $data['billing']['postcode'] = !empty($data['billing']['postcode']) ? $data['billing']['postcode'] : '123';
+//        $data['billing']['address1'] = !empty($data['billing']['address1']) ? $data['billing']['address1'] : '123';
+//        $data['billing']['state'] = !empty($data['billing']['state']) ? $data['billing']['state'] : '123';
+//        $data['billing']['city'] = !empty($data['billing']['city']) ? $data['billing']['city'] : '123';
 
         $data['billing']['address1'] = implode(PHP_EOL, array_filter($data['billing']['address1']));
         $data['shipping']['address1'] = implode(PHP_EOL, array_filter($data['shipping']['address1']));
@@ -149,15 +154,11 @@ class OnepageController extends Controller
     {
         $shippingMethod = request()->get('shipping_method');
 
-        $postcode = request()->get('postcode');
-        $state = request()->get('state');
-        $city = request()->get('city');
-        $district = request()->get('district');
-        $street = request()->get('street');
-        $house = request()->get('house');
-        $apartment = request()->get('apartment');
 
-        if (empty($postcode) || empty($state) || empty($city) || empty($district) || empty($street) || empty($house) || empty($apartment)) {
+        $cityRef = request()->get('city_ref');
+        $warehouseRef = request()->get('warehouse_ref');
+
+        if (empty($cityRef) || empty($warehouseRef)) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
         }
 
@@ -174,8 +175,7 @@ class OnepageController extends Controller
      * Saves payment method.
      *
      * @return \Illuminate\Http\Response
-     * @throws \Throwable
-     */
+    */
     public function savePayment()
     {
         $payment = request()->get('payment');
@@ -194,23 +194,17 @@ class OnepageController extends Controller
         ]);
     }
 
-
     /**
-     * @return \Illuminate\Http\JsonResponse
-     * Validate on save order. Will be redirect to refresh cart page on error
-     * @throws \Exception
-     */
+     * Saves order.
+     *
+     * @return \Illuminate\Http\Response
+    */
     public function saveOrder()
     {
-        $postcode = request()->get('postcode');
-        $state = request()->get('state');
-        $city = request()->get('city');
-        $district = request()->get('district');
-        $street = request()->get('street');
-        $house = request()->get('house');
-        $apartment = request()->get('apartment');
+        $cityRef = request()->get('city_ref');
+        $warehouseRef = request()->get('warehouse_ref');
 
-        if (empty($postcode) || empty($state) || empty($city) || empty($district) || empty($street) || empty($house) || empty($apartment)) {
+        if (empty($cityRef) || empty($warehouseRef)) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
         }
 
@@ -240,17 +234,8 @@ class OnepageController extends Controller
                 'address_type' => OrderAddress::ADDRESS_TYPE_SHIPPING
             ])->first();
             if (!empty($customerAddress)) {
-                $customerAddress->fillable(array_merge($customerAddress->getFillable(),['district', 'street', 'house', 'apartment']));
-                $customerAddress->fill(
-                    [
-                        'postcode' => $postcode,
-                        'state' => $state,
-                        'city' => $city,
-                        'district' => $district,
-                        'street' => $street,
-                        'house' => $house,
-                        'apartment' => $apartment
-                    ])->save();
+                $customerAddress->fillable(array_merge($customerAddress->getFillable(),["warehouse_ref", "city_ref"]));
+                $customerAddress->fill(['city_ref' => $cityRef, 'warehouse_ref' => $warehouseRef])->save();
             }
         }
 
@@ -285,6 +270,17 @@ class OnepageController extends Controller
     public function validateOrder()
     {
         $cart = Cart::getCart();
+
+//        if (!empty($cart)) {
+//            $customerAddress = CartAddress::where([
+//                'cart_id' => $cart->id,
+//                'customer_id' => $cart->customer_id,
+//                'address_type' => CartAddress::ADDRESS_TYPE_SHIPPING
+//            ])->first();
+//            if (!empty($customerAddress) && empty($customerAddress->warehouse_ref) || empty($customerAddress->city_ref)) {
+//                throw new \Exception(trans('Please check shipping city and warehouse'));
+//            }
+//        }
 
         $minimumOrderAmount = core()->getConfigData('sales.orderSettings.minimum-order.minimum_order_amount') ?? 0;
 

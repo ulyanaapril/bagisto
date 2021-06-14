@@ -44,7 +44,7 @@
                             </div>
 
                             <div class="delivery-{{$rate->carrier}}" hidden>
-                                @if ($rate->carrier == 'np')
+                                @if ($rate->carrier == 'np' || $rate->carrier == 'justin')
                                     <div class="col-md-12">
                                         <label for="delivery-ajax-city" class="mandatory">Місто</label>
                                         <select
@@ -219,6 +219,7 @@
                                     <br>
 
                                 @endif
+
                             </div>
 
 

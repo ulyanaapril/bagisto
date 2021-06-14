@@ -79,7 +79,7 @@ class NovaPoshta
     }*/
     function __construct($language = 'ru')
     {
-        return $this->setLanguage($language);
+        return $this->setLanguage($language)->setKey(env('NP_KEY'));
     }
 
     /**
@@ -919,8 +919,8 @@ class NovaPoshta
             throw new \Exception('Phone is required filed for recipient');
         if (!($counterparty['CityRecipient'] OR $counterparty['CityRef']))
             throw new \Exception('CityRecipient is required filed for recipient');
-        if (!($counterparty['RecipientAddress'] OR $counterparty['CityRef']))
-            throw new \Exception('RecipientAddress is required filed for recipient');
+//        if (!($counterparty['RecipientAddress'] OR $counterparty['CityRef']))
+//            throw new \Exception('RecipientAddress is required filed for recipient');
 
         // Set defaults
         if (!$counterparty['CounterpartyType']) {
@@ -1021,11 +1021,11 @@ class NovaPoshta
             $recipient['CityRecipient'] = $recipientCity['data'][0]['Ref'];
         }
         $recipient['CityRef'] = $recipient['CityRecipient'];
-        if (!$recipient['RecipientAddress']) {
+        if (empty($recipient['RecipientAddress'])) {
             $recipientWarehouse = $this->getWarehouse($recipient['CityRecipient'], $recipient['Warehouse']);
             $recipient['RecipientAddress'] = $recipientWarehouse['data'][0]['Ref'];
         }
-        if (!$recipient['Recipient']) {
+        if (empty($recipient['Recipient'])) {
             $recipientCounterparty = $this->model('Counterparty')->save($recipient);
             $recipient['Recipient'] = $recipientCounterparty['data'][0]['Ref'];
             $recipient['ContactRecipient'] = $recipientCounterparty['data'][0]['ContactPerson']['data'][0]['Ref'];

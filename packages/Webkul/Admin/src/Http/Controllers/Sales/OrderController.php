@@ -3,6 +3,8 @@
 namespace Webkul\Admin\Http\Controllers\Sales;
 
 use Illuminate\Support\Facades\Event;
+use Red\Justin\Models\JustinDepartments;
+use Red\NP\Http\NovaPoshta;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Sales\Repositories\OrderRepository;
 use \Webkul\Sales\Repositories\OrderCommentRepository;
@@ -70,8 +72,35 @@ class OrderController extends Controller
     public function view($id)
     {
         $order = $this->orderRepository->findOrFail($id);
+        try {
+            $cityName = '';
+            $warehouseName = '';
+        if (!empty($order->shipping_address)) {
+            $warehouseRef = $order->shipping_address->warehouse_ref;
+            $cityRef = $order->shipping_address->city_ref;
 
-        return view($this->_config['view'], compact('order'));
+            if (!empty($warehouseRef) && !empty($cityRef)) {
+                if ($order->shipping_method === 'np') {
+                    $np = new NovaPoshta();
+                    $cityName = $np->getCitiesName($cityRef);
+                    $warehouseName = $np->getWarehousesName($cityRef, $warehouseRef);
+
+                }
+                if ($order->shipping_method === 'justin') {
+                    $justin = JustinDepartments::where(['uuid' => $warehouseRef])->first();
+                    if (!empty($justin))
+                        $cityName = $justin->city_name;
+                        $warehouseName = $justin->description . ' ' . $justin->address;
+                }
+            }
+
+        }
+        } catch (\Exception $e) {
+//            var_dump($e->getMessage());die;
+        }
+
+
+        return view($this->_config['view'], ['order' => $order, 'cityName' => $cityName, 'warehouseName' => $warehouseName]);
     }
 
     /**

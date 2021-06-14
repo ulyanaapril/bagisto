@@ -1,10 +1,10 @@
 <?php
 
-namespace Red\Ukrposhta\Providers;
+namespace Red\Justin\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-class UkrposhtaServiceProvider extends ServiceProvider
+class JustinServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap services.
@@ -13,8 +13,8 @@ class UkrposhtaServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         include __DIR__ . '/../Http/routes.php';
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
     /**

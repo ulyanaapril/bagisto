@@ -285,7 +285,9 @@ return [
         Red\API\Providers\ApiServiceProvider::class,
         Red\Admin\Providers\AdminServiceProvider::class,
         Red\NP\Providers\NPServiceProvider::class,
-        Red\Ukrposhta\Providers\UkrposhtaServiceProvider::class
+        Red\Ukrposhta\Providers\UkrposhtaServiceProvider::class,
+        Red\Justin\Providers\JustinServiceProvider::class,
+        Red\Privat24\Providers\Privat24ServiceProvider::class
     ],
 
     /*

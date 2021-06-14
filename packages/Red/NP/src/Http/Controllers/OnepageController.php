@@ -204,6 +204,10 @@ class OnepageController extends Controller
         $cityRef = request()->get('city_ref');
         $warehouseRef = request()->get('warehouse_ref');
 
+        if (empty($cityRef) || empty($warehouseRef)) {
+            return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
+        }
+
         if (Cart::hasError()) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
         }

@@ -136,7 +136,7 @@ class AttributeRepository extends Repository
      */
     public function validateUserInput($data)
     {
-        if ($data['is_configurable']) {
+        if (!empty($data['is_configurable'])) {
             $data['value_per_channel'] = $data['value_per_locale'] = 0;
         }
 

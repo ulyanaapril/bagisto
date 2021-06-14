@@ -639,7 +639,8 @@
                         templateRender: null,
                         selected_shipping_method: '',
                         first_iteration : true,
-                        warehouses: []
+                        warehouses: [],
+                        justinCities: []
                     }
                 },
 
@@ -655,8 +656,6 @@
                 staticRenderFns: shippingTemplateRenderFns,
 
                 mounted: function () {
-                    this.fetchCities();
-
                     this.templateRender = shippingHtml.render;
 
                     for (var i in shippingHtml.staticRenderFns) {
@@ -704,15 +703,6 @@
                         });
                     },
 
-                    fetchCities: function () {
-                        let countriesEndPoint = `${this.$root.baseUrl}/red/np/cities`;
-                        this.$http.get(countriesEndPoint)
-                            .then(response => {
-                                this.countries = response.data.data;
-                            })
-                            .catch(function (error) {});
-                    },
-
                     fetchWarehouses: function () {
                         var warehousesUrl = `${this.$root.baseUrl}/red/${this.selected_shipping_method}/warehouses?q=` + this.city_ref;
 
@@ -724,7 +714,10 @@
                     },
 
                     methodSelected: function () {
-                        this.initSelect2();
+                        $('.delivery-' + this.selected_shipping_method).removeAttr('hidden');
+                        if (this.selected_shipping_method === 'np' || this.selected_shipping_method === 'justin') {
+                            this.initSelect2();
+                        }
                     },
                     validateMethod: function () {
                         this.$parent.validateForm('shipping-form');

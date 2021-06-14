@@ -15,6 +15,7 @@ class NPServiceProvider extends ServiceProvider
     {
         include __DIR__ . '/../Http/routes.php';
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'np');
+        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
     /**
