@@ -32,7 +32,7 @@ class NP extends AbstractShipping
         $object->carrier = 'np';
         $object->carrier_title = $this->getConfigData('title');
         $object->method = 'np';
-        $object->method_title = $this->getConfigData('title');
+        $object->method_title = trans('np::app.new-post');
         $object->method_description = $this->getConfigData('description');
         $object->price = 0;
         $object->base_price = 0;

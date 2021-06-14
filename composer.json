@@ -117,7 +117,8 @@
         "Red\\NP\\": "packages/Red/NP/src",
         "Red\\Ukrposhta\\": "packages/Red/Ukrposhta/src",
         "Red\\Justin\\": "packages/Red/Justin/src",
-        "Red\\Privat24\\": "packages/Red/Privat24/src"
+        "Red\\Privat24\\": "packages/Red/Privat24/src",
+        "Red\\Visa\\": "packages/Red/Visa/src"
       }
     },
     "autoload-dev": {

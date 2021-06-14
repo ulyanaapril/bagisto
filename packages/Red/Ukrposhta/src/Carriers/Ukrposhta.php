@@ -32,7 +32,7 @@ class Ukrposhta extends AbstractShipping
         $object->carrier = 'ukrposhta';
         $object->carrier_title = $this->getConfigData('title');
         $object->method = 'ukrposhta';
-        $object->method_title = $this->getConfigData('title');
+        $object->method_title = trans('ukrposhta::app.ukr-post');
         $object->method_description = $this->getConfigData('description');
         $object->price = 0;
         $object->base_price = 0;

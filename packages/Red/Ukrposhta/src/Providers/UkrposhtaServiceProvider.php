@@ -14,6 +14,7 @@ class UkrposhtaServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'ukrposhta');
         include __DIR__ . '/../Http/routes.php';
     }
 

@@ -34,11 +34,11 @@
 
                                 <div class="pl30">
                                     <div class="row">
-                                        <b>{{ core()->currency($rate->base_price) }}</b>
+                                        <b>{{ !empty((int)core()->currency($rate->base_price)) ? core()->currency($rate->base_price) : '' }}</b>
                                     </div>
 
                                     <div class="row">
-                                        <b>{{ $rate->method_title }}</b> - {{ __($rate->method_description) }}
+                                        <b>{{ $rate->method_title }}</b>
                                     </div>
                                 </div>
                             </div>

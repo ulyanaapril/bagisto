@@ -15,6 +15,7 @@ class JustinServiceProvider extends ServiceProvider
     {
         include __DIR__ . '/../Http/routes.php';
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'justin');
     }
 
     /**

@@ -189,26 +189,25 @@
                                                     {{ !empty($cityName) ? __('admin::app.sales.orders.city') . ': ' . $cityName : '' }}<br>
                                                     {{ !empty($warehouseName) ? $warehouseName : ''}}<br>
                                                 @else
-                                                    @if(!empty($address->postcode) && !empty($address->city))
-                                                        {{ __('admin::app.sales.orders.postcode') }} : {{ $address->postcode }}<br>
-                                                        {{ __('admin::app.sales.orders.city') }} : {{ $address->city }}<br>
+                                                    @if(!empty($order->shipping_address->postcode) && !empty($order->shipping_address->city))
+                                                        {{ __('admin::app.sales.orders.postcode') }} : {{ $order->shipping_address->postcode }}<br>
+                                                        {{ __('admin::app.sales.orders.city') }} : {{ $order->shipping_address->city }}<br>
                                                     @endif
-                                                    @if (!empty($address->state))
-                                                        {{ $address->state }} {{ __('admin::app.sales.orders.state') }},
+                                                    @if (!empty($order->shipping_address->state))
+                                                        {{ $order->shipping_address->state }} {{ __('admin::app.sales.orders.state') }},
                                                     @endif
-                                                    @if (!empty($address->district))
-                                                        {{$address->district}} {{ __('admin::app.sales.orders.district') }},
+                                                    @if (!empty($order->shipping_address->district))
+                                                        {{$order->shipping_address->district}} {{ __('admin::app.sales.orders.district') }},
                                                     @endif
-                                                    @if (!empty($address->street))
-                                                        {{ __('admin::app.sales.orders.st') }} {{ $address->street }}
+                                                    @if (!empty($order->shipping_address->street))
+                                                        {{ __('admin::app.sales.orders.st') }} {{ $order->shipping_address->street }}
                                                     @endif
-                                                    @if (!empty($address->house))
-                                                        {{ __('admin::app.sales.orders.bld') }} {{ $address->house }}
+                                                    @if (!empty($order->shipping_address->house))
+                                                        {{ __('admin::app.sales.orders.bld') }} {{ $order->shipping_address->house }}
                                                     @endif
-                                                    @if(!empty($address->apartment))
-                                                        {{ __('admin::app.sales.orders.apt') }} {{ $address->apartment }}
+                                                    @if(!empty($order->shipping_address->apartment))
+                                                        {{ __('admin::app.sales.orders.apt') }} {{ $order->shipping_address->apartment }}
                                                     @endif
-                                                    <br>
                                                 @endif
 
                                             </div>

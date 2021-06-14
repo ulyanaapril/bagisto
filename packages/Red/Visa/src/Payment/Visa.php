@@ -1,17 +1,22 @@
 <?php
 
-namespace Red\Privat24\Payment;
+namespace Red\Visa\Payment;
 
 use Webkul\Payment\Payment\Payment;
 
-class Privat24 extends Payment
+class Visa extends Payment
 {
     /**
      * Payment method code
      *
      * @var string
      */
-    protected $code  = 'privat24';
+    protected $code  = 'visa';
+
+    public function getRedirectUrl()
+    {
+        return route('visa.standard.redirect');
+    }
 
     /**
      * PayPal web URL generic getter
@@ -19,17 +24,9 @@ class Privat24 extends Payment
      * @param  array  $params
      * @return string
      */
-    public function getPrivat24Url()
+    public function getVisaUrl()
     {
         return sprintf('https://lmi.paysoft.solutions');
-    }
-
-    /**
-     * @return string
-     */
-    public function getRedirectUrl()
-    {
-        return route('privat24.standard.redirect');
     }
 
     /**
@@ -54,7 +51,7 @@ class Privat24 extends Payment
         $fields['LMI_PAYMENT_AMOUNT']    = 1; //$cart->sub_total
         $fields['LMI_PAYMENT_NO']        = $cart->id;
         $fields['LMI_PAYMENT_DESC']      = 'Оплата за заказ';
-        $fields['LMI_PAYMENT_SYSTEM']    = 49; //privat24
+        $fields['LMI_PAYMENT_SYSTEM']    = 21; //Visa/MasterCard
         $fields['LMI_SIM_MODE']          = 1;
         $fields['LMI_HASH']              = hash('sha256', $fields['LMI_MERCHANT_ID'].$fields['LMI_PAYMENT_NO'].$fields['LMI_PAYMENT_AMOUNT'].'joiedevivre');//joiedevivre //bagisto
         $fields['LMI_HASH']              = strtoupper($fields['LMI_HASH']);
