@@ -116,7 +116,7 @@ class ResourceController extends Controller
             $objSimple = app('Webkul\Product\Type\Simple');
             $this->img = app('Webkul\Product\Repositories\ProductImageRepository');
 
-            $data = $this->groupBy($data, 'model');
+            $data = $this->groupBy($data['products'], 'model');
 
             foreach ($data as $model => $group) {
                 $productConf = Product::whereHas('attribute_values', function ($query) use ($model) {
@@ -155,7 +155,7 @@ class ResourceController extends Controller
 
                     $objSimple->update($item, $variant->id);
 
-                    $this->createProductImage($variant->sku, $variant->id);
+//                    $this->createProductImage($variant->sku, $variant->id);
 
                 }
 
@@ -165,7 +165,13 @@ class ResourceController extends Controller
 
                 $this->repository->update($firstElement, $productConf->id);
 
-                $this->createProductImage($firstSku, $productConf->id);
+                $firstElement['name'] = $firstElement['name'] .'_ru';
+                $firstElement['description'] = $firstElement['description'] .'_ru';
+                $firstElement['short_description'] = $firstElement['short_description'] .'_ru';
+                $firstElement['locale'] = 'en';
+                $this->repository->update($firstElement, $productConf->id);
+
+//                $this->createProductImage($firstSku, $productConf->id);
 
             }
 
@@ -201,10 +207,9 @@ class ResourceController extends Controller
      * @return mixed
      */
     private function fillDefaultData($firstElement) {
-        $firstElement['sku'] = $firstElement['sku'] . '-1';
-        $firstElement['barcode'] = $firstElement['barcode'] . '-1';
-        $firstElement['url_key'] = $firstElement['url_key'] . '-1';
-        $firstElement['product_number'] = $firstElement['product_number'] . '-1';
+        $firstElement['sku'] = $firstElement['model'];
+        $firstElement['url_key'] = $firstElement['model'];
+        $firstElement['product_number'] = $firstElement['model'];
         $firstElement['type'] = 'configurable';
         $firstElement['channel'] = 'default';
         $firstElement['locale'] = 'uk';
