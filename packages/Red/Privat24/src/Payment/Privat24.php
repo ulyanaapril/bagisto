@@ -50,7 +50,7 @@ class Privat24 extends Payment
 
         $fields = [];
 
-        $fields['LMI_MERCHANT_ID']       = 2285;//2285 - main //7394 - test
+        $fields['LMI_MERCHANT_ID']       = 2285;//2285 - red test //7394 - bagisto test //7226 - prod
         $fields['LMI_PAYMENT_AMOUNT']    = 1; //$cart->sub_total
         $fields['LMI_PAYMENT_NO']        = $cart->id;
         $fields['LMI_PAYMENT_DESC']      = 'Оплата за заказ';
