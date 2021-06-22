@@ -5,6 +5,7 @@ namespace Red\API\Http\Controllers;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Red\Admin\Http\GoogleTranslation;
 use Red\Admin\Models\AttributeOption;
 use Red\Admin\Models\Category;
 use Red\Admin\Repositories\AttributeOptionRepository;
@@ -67,16 +68,23 @@ class ResourceController extends Controller
     ];
 
     /**
+     * @var GoogleTranslation
+     */
+    protected $trans;
+
+    /**
      * Create a new controller instance.
      *
      * @param CategoryRepository $categoryRepository
      * @param AttributeRepository $attribute
      * @param AttributeOptionRepository $attributeOption
+     * @param GoogleTranslation $trans
      */
     public function __construct(
         CategoryRepository $categoryRepository,
         AttributeRepository $attribute,
-        AttributeOptionRepository $attributeOption
+        AttributeOptionRepository $attributeOption,
+        GoogleTranslation $trans
     )
     {
         $this->guard = request()->has('token') ? 'admin-api' : 'admin';
@@ -86,6 +94,7 @@ class ResourceController extends Controller
         $this->categoryRepository = $categoryRepository;
         $this->attributeRepository = $attribute;
         $this->attributeOptionRepository = $attributeOption;
+        $this->trans = $trans;
 
         if (isset($this->_config['authorization_required']) && $this->_config['authorization_required']) {
 
@@ -218,10 +227,10 @@ class ResourceController extends Controller
             $this->repository->update($firstElement, $productConf->id);
 
             $firstElement['locale'] = 'ru';
-            $firstElement['name'] = $firstElement['name'] .'_ru';
-            $firstElement['composition'] = $firstElement['name'] .'_ru';
-            $firstElement['description'] = $firstElement['description'] . '_ru';
-            $firstElement['short_description'] = $firstElement['short_description'] .'_ru';
+            $firstElement['name'] = $this->trans->justTranslate($firstElement['name']);
+            $firstElement['composition'] = $this->trans->justTranslate($firstElement['composition']);
+            $firstElement['description'] = $this->trans->justTranslate($firstElement['description']);
+            $firstElement['short_description'] = $this->trans->justTranslate($firstElement['short_description']);
             $this->repository->update($firstElement, $productConf->id);
 
         }
