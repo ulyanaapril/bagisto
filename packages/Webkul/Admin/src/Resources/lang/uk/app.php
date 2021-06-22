@@ -392,7 +392,7 @@ return [
             'products-order' => 'Замовлена ​​продукція',
             'SKU' => 'SKU',
             'product-name' => 'Назва товару',
-            'qty' => 'Кількість',
+            'qty' => 'Кіль-сть',
             'item-status' => 'Статус елемента',
             'item-order' => 'Впорядковано (:qty_ordered)',
             'item-invoice' => 'Рахунок-фактура (:qty_invoiced)',
