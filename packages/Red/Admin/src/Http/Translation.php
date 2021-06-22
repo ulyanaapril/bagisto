@@ -1,5 +1,7 @@
 <?php
 
+namespace Red\Admin\Http;
+
 class Translation
 {
     /**

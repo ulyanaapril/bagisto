@@ -214,26 +214,14 @@ class ResourceController extends Controller
             $variants = $productConf->variants->toArray();
             $variants = array_column($variants, null, 'id');
             $firstElement['variants'] = $variants;
-            $firstElement['locale'] = 'uk';
-            $firstElement['locales'] = [
-                'uk'=> [
-                    'name' => 'name uk',
-                    'description' => 'desc ukr'
-                ],
-                'ru'=> [
-                    'name' => 'name ru',
-                    'description' => 'desc ru'
-                ]
-            ];
-            $firstElement['uk'] = [
-                'name' => 'name uk',
-                'description' => 'desc ukr'
-            ];
-            $firstElement['ru'] = [
-                'name' => 'name ru',
-                'description' => 'desc ukr'
-            ];
 
+            $this->repository->update($firstElement, $productConf->id);
+
+            $firstElement['locale'] = 'ru';
+            $firstElement['name'] = $firstElement['name'] .'_ru';
+            $firstElement['composition'] = $firstElement['name'] .'_ru';
+            $firstElement['description'] = $firstElement['description'] . '_ru';
+            $firstElement['short_description'] = $firstElement['short_description'] .'_ru';
             $this->repository->update($firstElement, $productConf->id);
 
         }
