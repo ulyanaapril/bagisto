@@ -170,15 +170,15 @@ return [
         'account' => 'Аккаунт',
         'profile' => 'Профиль',
         'wishlist' => 'Список желаний',
-        'all-category' => 'Все категории',
-        'search-text' => 'Искать здесь продукты',
+        'all-categories' => 'Все категории',
+        'search-text' => 'найди меня здесь...',
         'welcome-message' => 'Добро пожаловать, :customer_name',
         'dropdown-text' => 'Управление корзиной, заказами и списком желаний',
     ],
 
     'menu-navbar' => [
         'text-more' => 'Еще',
-        'text-category' => 'Магазин по категориям',
+        'text-category' => 'Категории',
     ],
 
     'minicart' => [
@@ -222,9 +222,9 @@ return [
         ],
         'signup-form' => [
             'login' => 'Войти',
-            'begin-user' => 'Стать пользователем',
+            'begin-user' => 'Стать пользователем 2',
             'user-registration' => 'Регистрация пользователя',
-            'form-sginup-text' => 'Если вы новичок в нашем магазине, мы рады видеть вас в качестве члена.',
+            'form-sginup-text' => 'Если вы новичок в нашем магазине, мы рады видеть Вас в нашем магазине.',
         ],
         'forget-password' => [
             'login' => 'Войти',
