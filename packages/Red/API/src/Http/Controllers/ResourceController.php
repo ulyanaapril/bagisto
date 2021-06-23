@@ -224,6 +224,7 @@ class ResourceController extends Controller
                 $item['channel'] = $firstElement['channel'];
                 $item['locale'] = $firstElement['locale'];
                 $item['categories'] = $firstElement['categories'];
+                $item['url_key'] = $item['model'];
                 $inventories = [];
                 if (is_array($item['inventories'])) {
                     foreach ($item['inventories'] as $key => $value) {
@@ -338,6 +339,7 @@ class ResourceController extends Controller
         }
 
         $article['sku'] = $article['model'];
+        $article['url_key'] = $article['model'];
         $article['type'] = 'configurable';
         $article['channel'] = 'default';
         $article['locale'] = 'uk';
