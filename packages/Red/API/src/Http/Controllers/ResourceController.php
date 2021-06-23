@@ -166,6 +166,11 @@ class ResourceController extends Controller
 
             if (!empty($products = $data['products'])) {
                 $this->createArticles($products);
+            } else {
+                return response()->json([
+                    'status' => 500,
+                    'message' => 'Порожній масив Products',
+                ]);
             }
 
             return response()->json([
