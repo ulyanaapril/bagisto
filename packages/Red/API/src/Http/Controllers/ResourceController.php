@@ -2,6 +2,7 @@
 
 namespace Red\API\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -14,6 +15,7 @@ use Throwable;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Core\Contracts\Validations\Slug;
+use Webkul\Inventory\Repositories\InventorySourceRepository;
 use Webkul\Product\Models\Product;
 
 class ResourceController extends Controller
@@ -73,18 +75,25 @@ class ResourceController extends Controller
     protected $trans;
 
     /**
+     * @var
+     */
+    protected $inventorySourceRepository;
+
+    /**
      * Create a new controller instance.
      *
      * @param CategoryRepository $categoryRepository
      * @param AttributeRepository $attribute
      * @param AttributeOptionRepository $attributeOption
      * @param GoogleTranslation $trans
+     * @param InventorySourceRepository $inventorySourceRepository
      */
     public function __construct(
         CategoryRepository $categoryRepository,
         AttributeRepository $attribute,
         AttributeOptionRepository $attributeOption,
-        GoogleTranslation $trans
+        GoogleTranslation $trans,
+        InventorySourceRepository $inventorySourceRepository
     )
     {
         $this->guard = request()->has('token') ? 'admin-api' : 'admin';
@@ -95,6 +104,7 @@ class ResourceController extends Controller
         $this->attributeRepository = $attribute;
         $this->attributeOptionRepository = $attributeOption;
         $this->trans = $trans;
+        $this->inventorySourceRepository = $inventorySourceRepository;
 
         if (isset($this->_config['authorization_required']) && $this->_config['authorization_required']) {
 
@@ -209,6 +219,41 @@ class ResourceController extends Controller
                 $item['channel'] = $firstElement['channel'];
                 $item['locale'] = $firstElement['locale'];
                 $item['categories'] = $firstElement['categories'];
+                $inventories = [];
+                if (is_array($item['inventories'])) {
+                    foreach ($item['inventories'] as $key => $value) {
+                        $channelInventorySourceIds = core()->getCurrentChannel()
+                            ->inventory_sources()
+                            ->where('status', 1)
+                            ->where('code', $key)
+                            ->pluck('id')
+                            ->toArray();
+                        if (!empty($channelInventorySourceIds)) {
+                            $inventories[$channelInventorySourceIds[0]] = $value;
+                        } else {
+                            $inventorySourceData = [
+                                'code' => $key,
+                                'name' => $key,
+                                'contact_email' => 'market@red.ua',
+                                'contact_number' => '1111',
+                                'contact_name' => 'ПІБ',
+                                'country' => 'UA',
+                                'state' => 'Kyiv',
+                                'city' => 'Kyiv',
+                                'street' => 'вулиця',
+                                'postcode' => '1111'
+                            ];
+                            $inventorySource = $this->inventorySourceRepository->create($inventorySourceData);
+                            $inventories[$inventorySource->id] = $value;
+                            DB::table('channel_inventory_sources')->insert([
+                                'channel_id'          => core()->getCurrentChannel()->id,
+                                'inventory_source_id' => $inventorySource->id,
+                            ]);
+                        }
+
+                    }
+                }
+                $item['inventories'] = $inventories;
 
                 $variant = Product::where(['sku' => $item['sku']])->first();
 
@@ -263,7 +308,15 @@ class ResourceController extends Controller
             $attributeBrand = $this->attributeRepository->create(['code' => 'brand', 'admin_name' => 'Brand', 'type' => 'select', 'is_configurable' => 1]);
         }
         $optionSeason = AttributeOption::where(['id' => $article['season'], 'attribute_id' => $attributeSeason->id])->first();
-        $optionBrand = AttributeOption::where(['id' => $article['brand'], 'attribute_id' => $attributeBrand->id])->first();
+        $optionBrand = AttributeOption::where(['id_1c' => $article['brand_id'], 'attribute_id' => $attributeBrand->id])->first();
+        if (empty($optionBrand)) {
+            $optionBrand = $this->attributeOptionRepository->create([
+                'attribute_id' => $attributeBrand->id,
+                'admin_name' => $article['brand_name'],
+                'id_1c' => $article['brand_id'],
+                'sort_order' => 1
+            ]);
+        }
 
         $categories = [];
         foreach ($article['categories'] as $item) {
@@ -292,6 +345,7 @@ class ResourceController extends Controller
             'color' => [],
             'size' => []
         ];
+        $article['inventories'] = [];
 
         return $article;
     }
