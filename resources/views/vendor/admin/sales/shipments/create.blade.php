@@ -215,6 +215,9 @@
 {{--                                @if ($order->shipping_method == 'justin')--}}
 {{--                                    <order-shipping-justin></order-shipping-justin>--}}
 {{--                                @endif--}}
+                                @if ($order->shipping_method == 'ukrposhta')
+                                    <order-shipping-ukrposhta></order-shipping-ukrposhta>
+                                @endif
 
                             </div>
                         </div>
@@ -455,6 +458,134 @@
             <input type="hidden" name="npTrack" ref="npTrack" id="npTrack" value='{{$order->track_number}}'>
         </div>
     </script>
+    <script type="text/x-template" id="order-shipping-ukrposhta-template">
+        <div>
+            <div class="secton-title">
+                <span>{{ __('admin::app.sales.orders.create-ttn') }}</span>
+            </div>
+
+            <div class="section-content">
+                <div class="row">
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-weight">{{ __('admin::app.sales.orders.parcel-weight') }}</label>
+                        <input type="text" required class="control" name="ukrposhta-weight" v-validate="'required'" v-model="weight">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label required" for="ukrposhta-biggest-side">{{ __('admin::app.sales.orders.biggest-side') }}</label>
+                        <input type="text" class="control" required name="ukrposhta-biggest-side" v-validate="'required'" v-model="biggestSide">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label required" for="ukrposhta-declared-value">{{ __('admin::app.sales.orders.declared-value') }}</label>
+                        <input type="text" class="control" value='{{$order->sub_total}}' required name="ukrposhta-declared-value" v-validate="'required'" v-model="declaredValue">
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label required" for="ukrposhta-postpayd">{{ __('admin::app.sales.orders.postpayd') }}</label>
+                        <input type="text" class="control" value='{{$order->sub_total}}' required name="ukrposhta-postpayd" v-validate="'required'" v-model="postpayd">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-additional-info">{{ __('admin::app.sales.orders.additional-info') }}</label>
+                        <textarea type="text" class="control" name="ukrposhta-additional-info" v-validate="'required'" v-model="additionalInfo"></textarea>
+                    </div>
+                    <div class="control-group">
+                        <label for="ukrposhta-group" class="required">
+                            {{ __('admin::app.sales.orders.group') }}
+                        </label>
+
+                        <select
+                                type="text"
+                                id="ukrposhta-group"
+                                name="ukrposhta-group"
+                                v-validate="'required'"
+                                class="control select2"
+                                v-model="group"
+                                data-vv-as="&quot;{{ __('admin::app.sales.orders.group') }}&quot;">
+
+                            <option :value="1">1</option>
+                            <option :value="2">2</option>
+
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ukrposhta-enroll-postpayment">
+                            {{ __('admin::app.sales.orders.enroll-postpayment') }}
+                        </label>
+
+                        <select
+                                type="text"
+                                id="ukrposhta-enroll-postpayment"
+                                name="ukrposhta-enroll-postpayment"
+                                v-validate="'required'"
+                                class="control select2"
+                                v-model="enrollPostpayment"
+                                data-vv-as="&quot;{{ __('admin::app.sales.orders.enroll-postpayment') }}&quot;">
+
+                            <option :value="1">{{ __('admin::app.sales.orders.yes') }}</option>
+                            <option :value="0">{{ __('admin::app.sales.orders.no') }}</option>
+
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ukrposhta-pays-shipping">
+                            {{ __('admin::app.sales.orders.pays-shipping') }}
+                        </label>
+
+                        <select
+                                type="text"
+                                id="ukrposhta-pays-shipping"
+                                name="ukrposhta-pays-shipping"
+                                v-model="paysShipping"
+                                v-validate="'required'"
+                                class="control select2"
+                                data-vv-as="&quot;{{ __('admin::app.sales.orders.pays-shipping') }}&quot;">
+
+                            <option :value="1">{{ __('admin::app.sales.orders.sender') }}</option>
+                            <option :value="2">{{ __('admin::app.sales.orders.recipient') }}</option>
+
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="ukrposhta-pays-postage">
+                            {{ __('admin::app.sales.orders.pays-postage') }}
+                        </label>
+
+                        <select
+                                type="text"
+                                id="ukrposhta-pays-postage"
+                                name="ukrposhta-pays-postage"
+                                v-model="paysPostage"
+                                v-validate="'required'"
+                                class="control select2"
+                                data-vv-as="&quot;{{ __('admin::app.sales.orders.pays-postage') }}&quot;">
+
+                            <option :value="2">{{ __('admin::app.sales.orders.recipient') }}</option>
+                            <option :value="1">{{ __('admin::app.sales.orders.sender') }}</option>
+
+                        </select>
+                    </div>
+                    <div class="informer-widget">
+                        <div class="alert alert-info alert-info-product fade" role="alert">
+                            <span></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="page-action">
+                        <a class="btn btn-sm btn-primary"
+                           @click="createTtn()">{{ __('admin::app.sales.orders.create-ttn') }}
+                        </a>
+                        <a class="btn btn-sm btn-primary"
+                           :class="`${trackNumber == '' ? 'disabled' : ''}`"
+                           :href="printTtn"
+                           target="_blank"
+                           type="button">
+                            <i class="icon ion-ios-print-outline" data-tooltip="tooltip"></i><span>{{ __('admin::app.sales.orders.print-100') }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
     <script type="text/x-template" id="order-shipping-justin-template">
         <div>
             <div class="secton-title">
@@ -521,34 +652,6 @@
                         <input type="text" hidden="true" value="0" name="redelivery_amount">
                     </div>
                     <div class="control-group">
-                        <label class="form-control-label">Оплата:</label>
-                        {{--                    <input type="text" required class="form-control"--}}
-                        {{--                           value="<?php if ($this->order->liqpay_status_id == 3) {--}}
-                        {{--                               echo 0;--}}
-                        {{--                           } else {--}}
-                        {{--                               echo $this->order->getAmount();--}}
-                        {{--                           }?>" name="order_amount">--}}
-
-                        {{--                    <input type="text" hidden="true" value="<?php if ($this->order->liqpay_status_id == 3) {--}}
-                        {{--                        echo 'false';--}}
-                        {{--                    } else {--}}
-                        {{--                        echo 'true';--}}
-                        {{--                    } ?>" name="redelivery_payment_is_required">--}}
-                        {{--                    <input type="text" hidden="true" value="<?php if ($this->order->liqpay_status_id == 3) {--}}
-                        {{--                        echo 0;--}}
-                        {{--                    } else {--}}
-                        {{--                        echo 1;--}}
-                        {{--                    }?>" name="redelivery_payment_payer">--}}
-
-                        <input type="text" hidden="true" value="false" name="delivery_payment_is_required">
-                        <!--<input type="text" hidden="true" value="0" name="delivery_payment_payer">-->
-                        {{--                    <input type="text" hidden="true" value="<?php if ($this->order->liqpay_status_id == 3) {--}}
-                        {{--                        echo 'false';--}}
-                        {{--                    } else {--}}
-                        {{--                        echo 'true';--}}
-                        {{--                    }?>" name="order_payment_is_required">--}}
-                    </div>
-                    <div class="control-group">
                         <label class="control-label">Платит за доставку:</label>
                         <div>
                             <label class="rdiobox"><input name="delivery_payment_payer" checked type="radio"
@@ -569,6 +672,67 @@
                 </div>
             </div>
         </div>
+    </script>
+    <script>
+        Vue.component('order-shipping-ukrposhta', {
+
+            template: '#order-shipping-ukrposhta-template',
+
+            inject: ['$validator'],
+
+            data: function() {
+                return {
+                    trackNumber:'',
+                    printTtn:'',
+                    source: "",
+                    weight: 0,
+                    biggestSide: 0,
+                    declaredValue: 0,
+                    postpayd: 0,
+                    additionalInfo: '',
+                    group: 1,
+                    enrollPostpayment: 0,
+                    paysShipping: 1,
+                    paysPostage: 2
+                }
+            },
+
+            methods: {
+                createTtn: function () {
+                    this.$http.post("{{ route('red.ukrposhta.create-ttn', ['orderId' => $order->id]) }}", {
+                        'weight': this.weight,
+                        'biggestSide': this.biggestSide,
+                        'declaredValue': this.declaredValue,
+                        'postpayd': this.postpayd,
+                        'additionalInfo': this.additionalInfo,
+                        'group': this.group,
+                        'enrollPostpayment': this.enrollPostpayment,
+                        'paysShipping': this.paysShipping,
+                        'paysPostage': this.paysPostage
+                    })
+                        .then(response => {
+                            if (response.data.status === 500) {
+                                $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
+                                if (response.data.logMessage) {
+                                    console.log(response.data.logMessage)
+                                }
+                            } else {
+                                if (response.data.data[0]['IntDocNumber'] !== '' ) {
+                                    $('input[name="shipment[track_number]"]').val(response.data.data[0]['IntDocNumber']);
+                                    $('input[name="shipment[carrier_title]"]').val('NP');
+                                    this.trackNumber = response.data.data[0]['IntDocNumber'];
+                                    this.printTtn = 'https://my.novaposhta.ua/orders/printDocument/orders[]/' + this.trackNumber + '/type/html/apiKey/' + this.npKey
+                                    $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
+                                }
+
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        });
+                },
+            },
+        });
     </script>
     <script>
         Vue.component('order-shipping-justin', {

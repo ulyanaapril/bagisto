@@ -59,4 +59,41 @@ class ResourceController extends Controller
         );
     }
 
+    /**
+     * @param $orderId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function createTtn ($orderId) {
+        $up = new \UkrPostAPI();
+        $request = request();
+        $data = $request->all();
+
+        $s = $up->getShipmentInGroups(
+            $data['shipmentGroupUuid'],
+            $data['recipient_uuid'],
+            $data['lastName'],
+            $data['firstName'],
+            $data['middleName'],
+            $data['externalId'],
+            $data['weight'],
+            $data['length'],
+            $data['declaredPrice'],
+            $data['postPay'],
+            $data['description'],
+            $data['transferPostPayToBankAccount'],
+            $data['paidByRecipient'],
+            $data['postPayPaidByRecipient']
+        );
+
+        if ($s->uuid) {
+//            $ord->setNakladna($s->barcode);
+//            $this->_redir('ukrpost/print/sticker/shipment/uuid/' . $s->uuid);
+
+        }
+        return response()->json([
+            'message' => 'ok',
+            'status' => 200
+        ]);
+    }
+
 }

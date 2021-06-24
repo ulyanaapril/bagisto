@@ -6,5 +6,6 @@ Route::group(['middleware' => ['web', 'locale', 'theme', 'currency']], function 
     Route::post('red/checkout/ukrposhta/save-order', 'Red\Ukrposhta\Http\Controllers\OnepageController@saveOrder')->name('red.checkout.ukrposhta.save-order');
     Route::get('red/ukrposhta/cities', 'Red\Ukrposhta\Http\Controllers\ResourceController@cities')->name('red.ukrposhta.cities');
     Route::get('red/ukrposhta/warehouses', 'Red\Ukrposhta\Http\Controllers\ResourceController@warehouses')->name('red.ukrposhta.warehouses');
+    Route::post('red/ukrposhta/create-ttn/{orderId}', 'Red\Ukrposhta\Http\Controllers\ResourceController@createTtn')->name('red.ukrposhta.create-ttn');
 });
 
