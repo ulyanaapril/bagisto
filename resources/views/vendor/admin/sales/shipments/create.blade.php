@@ -487,6 +487,14 @@
                         <textarea type="text" class="control" name="ukrposhta-additional-info" v-validate="'required'" v-model="additionalInfo"></textarea>
                     </div>
                     <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-first-name">{{ __('admin::app.sales.orders.first_name') }}</label>
+                        <input type="text" class="control" value='{{$order->shipping_address->first_name}}' name="ukrposhta-first-name" v-validate="'required'" v-model="firstName">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-last-name">{{ __('admin::app.sales.orders.last_name') }}</label>
+                        <input type="text" class="control" value='{{$order->shipping_address->last_name}}' name="ukrposhta-last-name" v-validate="'required'" v-model="lastName">
+                    </div>
+                    <div class="control-group">
                         <label for="ukrposhta-group" class="required">
                             {{ __('admin::app.sales.orders.group') }}
                         </label>
@@ -687,13 +695,15 @@
                     source: "",
                     weight: 0,
                     biggestSide: 0,
-                    declaredValue: 0,
-                    postpayd: 0,
+                    declaredValue: '{{$order->sub_total}}',
+                    postpayd: '{{$order->sub_total}}',
                     additionalInfo: '',
                     group: 1,
                     enrollPostpayment: 0,
                     paysShipping: 1,
-                    paysPostage: 2
+                    paysPostage: 2,
+                    firstName: '{{$order->shipping_address->first_name}}',
+                    lastName: '{{$order->shipping_address->last_name}}'
                 }
             },
 
@@ -701,14 +711,16 @@
                 createTtn: function () {
                     this.$http.post("{{ route('red.ukrposhta.create-ttn', ['orderId' => $order->id]) }}", {
                         'weight': this.weight,
-                        'biggestSide': this.biggestSide,
-                        'declaredValue': this.declaredValue,
-                        'postpayd': this.postpayd,
-                        'additionalInfo': this.additionalInfo,
-                        'group': this.group,
-                        'enrollPostpayment': this.enrollPostpayment,
-                        'paysShipping': this.paysShipping,
-                        'paysPostage': this.paysPostage
+                        'length': this.biggestSide,
+                        'declaredPrice': this.declaredValue,
+                        'postPay': this.postpayd,
+                        'description': this.additionalInfo,
+                        'shipmentGroupUuid': this.group,
+                        'transferPostPayToBankAccount': this.enrollPostpayment,
+                        'paidByRecipient': this.paysShipping,
+                        'postPayPaidByRecipient': this.paysPostage,
+                        'lastName': this.lastName,
+                        'firstName': this.firstName,
                     })
                         .then(response => {
                             if (response.data.status === 500) {
@@ -717,13 +729,14 @@
                                     console.log(response.data.logMessage)
                                 }
                             } else {
-                                if (response.data.data[0]['IntDocNumber'] !== '' ) {
-                                    $('input[name="shipment[track_number]"]').val(response.data.data[0]['IntDocNumber']);
-                                    $('input[name="shipment[carrier_title]"]').val('NP');
-                                    this.trackNumber = response.data.data[0]['IntDocNumber'];
-                                    this.printTtn = 'https://my.novaposhta.ua/orders/printDocument/orders[]/' + this.trackNumber + '/type/html/apiKey/' + this.npKey
-                                    $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
-                                }
+                                console.log(response.data)
+                                // if (response.data.data[0]['IntDocNumber'] !== '' ) {
+                                //     $('input[name="shipment[track_number]"]').val(response.data.data[0]['IntDocNumber']);
+                                //     $('input[name="shipment[carrier_title]"]').val('NP');
+                                //     this.trackNumber = response.data.data[0]['IntDocNumber'];
+                                //     this.printTtn = 'https://my.novaposhta.ua/orders/printDocument/orders[]/' + this.trackNumber + '/type/html/apiKey/' + this.npKey
+                                //     $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
+                                // }
 
                             }
                         })

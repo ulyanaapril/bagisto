@@ -1,5 +1,7 @@
 <?php
 
+namespace Red\Ukrposhta\Http;
+
 /**
  *
  */
@@ -149,16 +151,16 @@ class UkrPostAPI
                 'district' => (string)$result->district,
                 'street' => (string)$result->street,
                 'house_number' => (string)$result->houseNumber,
-                'apartment_number' => (string)$result->apartmentNumbe,
+                'apartment_number' => (string)$result->apartmentNumber,
                 'description' => (string)$result->description,
                 'countryside' => $result->countryside,
                 'detailed_info' => $result->detailedInfo,
                 'clients_id' => $externalId,
                 'ctime' => date('Y-m-d H:i:s')
             ];
-            $adrr = new UkrPostAddress($result->id);
-            $adrr->import($adr);
-            $adrr->save();
+//            $adrr = new UkrPostAddress($result->id);//ulyana commit
+//            $adrr->import($adr);//ulyana commit
+//            $adrr->save();//ulyana commit
         }
         return $result;
     }
@@ -246,9 +248,9 @@ class UkrPostAPI
             $model = 'clients';
             $client = $this->request('POST', $model, $param);
             if ($client->uuid) {
-                $cl = new Ukrpostkontragent();
-                $cl->import($client);
-                $cl->save();
+//                $cl = new Ukrpostkontragent();
+//                $cl->import($client);
+//                $cl->save();
             }
             return $client;
         } else {
@@ -295,22 +297,7 @@ class UkrPostAPI
             ];
             $model = 'clients';
             $client = $this->request('POST', $model, $param);
-            if ($client->uuid) {
-                $cl = new Ukrpostkontragent();
-                $cl->setUuid($client->uuid);
-                $cl->setName($client->name);
-                $cl->setFirstName($client->firstName);
-                $cl->setMiddleName($client->middleName);
-                $cl->setLastName($client->lastName);
-                $cl->setExternalId($client->externalId);
-                $cl->setCounterpartyUuid($client->counterpartyUuid);
-                $cl->setAddressId($client->addressId);
-                $cl->setPhoneNumber($client->phoneNumber);
-                $cl->setEmail($client->email);
-                $cl->setType($client->type);
-                $cl->setCtime(date('Y-m-d H:i:s'));
-                $cl->save();
-            }
+
             return $client;
         } else {
             return $address;
@@ -664,9 +651,9 @@ class UkrPostAPI
                 'delivery_date' => $res->deliveryDate,
                 'ctime' => date('Y-m-d H:i:s')
             ];
-            $s = new UkrPostShipments();
-            $s->import($ss);
-            $s->save();
+//            $s = new UkrPostShipments();
+//            $s->import($ss);
+//            $s->save();
         }
         return $res;
     }
