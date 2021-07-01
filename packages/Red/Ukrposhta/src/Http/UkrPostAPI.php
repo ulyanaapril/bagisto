@@ -737,7 +737,7 @@ class UkrPostAPI
      */
     public function getSticker100_100($shipment_uui = '')
     {
-        // $param = '&size=SIZE_A4';
+         $param = '&size=SIZE_A4';
         $model = 'shipments/' . $shipment_uui . '/sticker';
         return $this->prints('GET', $model, $param);
     }

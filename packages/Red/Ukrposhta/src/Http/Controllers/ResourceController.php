@@ -83,7 +83,6 @@ class ResourceController extends Controller
             $request = request();
             $data = $request->all();
 
-
             $order = $this->orderRepository->findOrFail($orderId);
             $cl = UkrpostClients::where(['customer_id' => $order->customer_id])->first();
 
@@ -91,7 +90,7 @@ class ResourceController extends Controller
                 $client = $up->getNewClient($data['lastName'], $data['firstName'], '', $order->shipping_address->phone, '_' . $order->customer_id, $order->shipping_address->postcode, $order->shipping_address->state, $order->shipping_address->city, $order->shipping_address->district, $order->shipping_address->street, $order->shipping_address->house, $order->shipping_address->apartment, $order->shipping_address->email);
                 if (!empty($client->uuid)) {
                     $cl = new UkrpostClients();
-                    $cl = $cl->fill([
+                    $cl->fill([
                         'customer_id' => 1,
                         'uuid' => $client->uuid,
                         'name' => $client->name,
@@ -118,7 +117,7 @@ class ResourceController extends Controller
             }
 
             if (empty($client->uuid) && !empty($client->message)) {
-                throw new \Exception($client->message, 500);
+                throw new \Exception($client->message);
             }
 
             $s = $up->getNewShipments(
@@ -138,21 +137,35 @@ class ResourceController extends Controller
                 $data['postPayPaidByRecipient']
             );
 
-            if ($s->uuid) {
-//            $ord->setNakladna($s->barcode);
-//                return redirect()->away('ukrpost/print/sticker/shipment/uuid/' . $s->uuid);
+            if (!empty($s->barcode)) {
+                return response()->json([
+                    'message' => 'ok',
+                    'data' => json_decode(json_encode($s), true),
+                    'status' => 200
+                ], 200);
+            } else if (!empty($s->message)){
+                throw new \Exception($s->message);
             }
-            return response()->json([
-                'message' => 'ok',
-                'data' => $s,
-                'status' => 200
-            ], 200);
+
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'status' => 500
+                'status' => 500,
+                'logMessage' => $e->getMessage()
             ], 500);
         }
+
+    }
+
+    /**
+     * @param $orderId
+     */
+    public function printTtn($orderId){
+        $up = new UkrPostAPI();
+        $order = $this->orderRepository->findOrFail($orderId);
+        $pdf = $up->getSticker100_100('0503076516270');
+        header('Content-type: application/pdf');
+        echo '<div style="padding: 10px;    margin: 10px;">' . $pdf . '</div>';
 
     }
 

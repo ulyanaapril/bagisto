@@ -584,7 +584,7 @@
                         </a>
                         <a class="btn btn-sm btn-primary"
                            :class="`${trackNumber == '' ? 'disabled' : ''}`"
-                           :href="printTtn"
+                           href="{{route("red.ukrposhta.print-ttn", ['orderId' => $order->id])}}"
                            target="_blank"
                            type="button">
                             <i class="icon ion-ios-print-outline" data-tooltip="tooltip"></i><span>{{ __('admin::app.sales.orders.print-100') }}</span>
@@ -729,14 +729,16 @@
                                     console.log(response.data.logMessage)
                                 }
                             } else {
-                                console.log(response.data)
-                                // if (response.data.data[0]['IntDocNumber'] !== '' ) {
-                                //     $('input[name="shipment[track_number]"]').val(response.data.data[0]['IntDocNumber']);
-                                //     $('input[name="shipment[carrier_title]"]').val('NP');
-                                //     this.trackNumber = response.data.data[0]['IntDocNumber'];
-                                //     this.printTtn = 'https://my.novaposhta.ua/orders/printDocument/orders[]/' + this.trackNumber + '/type/html/apiKey/' + this.npKey
-                                //     $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
-                                // }
+                                if (response.data.data.barcode) {
+
+                                }
+
+                                if (response.data.data.barcode !== '' ) {
+                                    $('input[name="shipment[track_number]"]').val(response.data.data.barcode);
+                                    $('input[name="shipment[carrier_title]"]').val('Ukrpost');
+                                    this.trackNumber = response.data.data.barcode;
+                                    $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
+                                }
 
                             }
                         })
