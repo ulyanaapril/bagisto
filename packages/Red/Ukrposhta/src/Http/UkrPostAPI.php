@@ -141,7 +141,7 @@ class UkrPostAPI
         ];
         $model = 'addresses';
         $result = $this->request('POST', $model, $param);
-        if ($result->id) {
+        if (!empty($result->id)) {
             $adr = [
                 'ids' => $result->id,
                 'postcode' => $result->postcode,
@@ -281,7 +281,7 @@ class UkrPostAPI
     {
         $address = $this->newAddress($postcode, $region, $city, $district, $street, $houseNumber, $apartmentNumber, $externalId);
 
-        if ($address->id) {
+        if (!empty($address->id)) {
 
             $param = [
                 'type' => 'INDIVIDUAL',

@@ -467,6 +467,46 @@
             <div class="section-content">
                 <div class="row">
                     <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-first-name">{{ __('admin::app.sales.orders.first-name') }}</label>
+                        <input type="text" class="control" name="ukrposhta-first-name" v-validate="'required'" v-model="firstName">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-last-name">{{ __('admin::app.sales.orders.last-name') }}</label>
+                        <input type="text" class="control" name="ukrposhta-last-name" v-validate="'required'" v-model="lastName">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-phone">{{ __('admin::app.sales.orders.phone') }}</label>
+                        <input type="text" class="control" name="ukrposhta-phone" v-validate="'required'" v-model="phone">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-postcode">{{ __('admin::app.sales.orders.postcode') }}</label>
+                        <input type="text" class="control" name="ukrposhta-postcode" v-validate="'required'" v-model="postcode">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-city">{{ __('admin::app.sales.orders.city') }}</label>
+                        <input type="text" class="control" name="ukrposhta-city" v-validate="'required'" v-model="city">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-state">{{ __('admin::app.sales.orders.state') }}</label>
+                        <input type="text" class="control" name="ukrposhta-state" v-validate="'required'" v-model="state">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-district">{{ __('admin::app.sales.orders.district') }}</label>
+                        <input type="text" class="control" name="ukrposhta-district" v-validate="'required'" v-model="district">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-street">{{ __('admin::app.sales.orders.street') }}</label>
+                        <input type="text" class="control"  name="ukrposhta-street" v-validate="'required'" v-model="street">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-house">{{ __('admin::app.sales.orders.house') }}</label>
+                        <input type="text" class="control" name="ukrposhta-house" v-validate="'required'" v-model="house">
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label required" for="ukrposhta-apartment">{{ __('admin::app.sales.orders.apartment') }}</label>
+                        <input type="text" class="control" name="ukrposhta-apartment" v-validate="'required'" v-model="apartment">
+                    </div>
+                    <div class="control-group">
                         <label class="form-control-label required" for="ukrposhta-weight">{{ __('admin::app.sales.orders.parcel-weight') }}</label>
                         <input type="text" required class="control" name="ukrposhta-weight" v-validate="'required'" v-model="weight">
                     </div>
@@ -485,14 +525,6 @@
                     <div class="control-group">
                         <label class="form-control-label required" for="ukrposhta-additional-info">{{ __('admin::app.sales.orders.additional-info') }}</label>
                         <textarea type="text" class="control" name="ukrposhta-additional-info" v-validate="'required'" v-model="additionalInfo"></textarea>
-                    </div>
-                    <div class="control-group">
-                        <label class="form-control-label required" for="ukrposhta-first-name">{{ __('admin::app.sales.orders.first_name') }}</label>
-                        <input type="text" class="control" value='{{$order->shipping_address->first_name}}' name="ukrposhta-first-name" v-validate="'required'" v-model="firstName">
-                    </div>
-                    <div class="control-group">
-                        <label class="form-control-label required" for="ukrposhta-last-name">{{ __('admin::app.sales.orders.last_name') }}</label>
-                        <input type="text" class="control" value='{{$order->shipping_address->last_name}}' name="ukrposhta-last-name" v-validate="'required'" v-model="lastName">
                     </div>
                     <div class="control-group">
                         <label for="ukrposhta-group" class="required">
@@ -579,8 +611,8 @@
                         </div>
                     </div>
                     <div class="page-action">
-                        <a class="btn btn-sm btn-primary"
-                           @click="createTtn()">{{ __('admin::app.sales.orders.create-ttn') }}
+                        <a class="btn btn-sm btn-primary" :disabled="isDisable()"
+                            @click="createTtn()">{{ __('admin::app.sales.orders.create-ttn') }}
                         </a>
                         <a class="btn btn-sm btn-primary"
                            :class="`${trackNumber == '' ? 'disabled' : ''}`"
@@ -703,11 +735,24 @@
                     paysShipping: 1,
                     paysPostage: 2,
                     firstName: '{{$order->shipping_address->first_name}}',
-                    lastName: '{{$order->shipping_address->last_name}}'
+                    lastName: '{{$order->shipping_address->last_name}}',
+                    phone: '{{$order->shipping_address->phone}}',
+                    postcode: '{{$order->shipping_address->postcode}}',
+                    city: '{{$order->shipping_address->city}}',
+                    state: '{{$order->shipping_address->state}}',
+                    district: '{{$order->shipping_address->district}}',
+                    street: '{{$order->shipping_address->street}}',
+                    house: '{{$order->shipping_address->house}}',
+                    apartment: '{{$order->shipping_address->apartment}}'
                 }
             },
 
             methods: {
+                isDisable() {
+                    return this.firstName === '' || this.lastName === '' || this.phone === '' || this.postcode === ''
+                        || this.city === '' || this.state === '' || this.district === '' || this.street === ''
+                        || this.house === '' || this.apartment === '';
+                },
                 createTtn: function () {
                     this.$http.post("{{ route('red.ukrposhta.create-ttn', ['orderId' => $order->id]) }}", {
                         'weight': this.weight,
@@ -721,6 +766,14 @@
                         'postPayPaidByRecipient': this.paysPostage,
                         'lastName': this.lastName,
                         'firstName': this.firstName,
+                        'phone': this.phone,
+                        'postcode': this.postcode,
+                        'city': this.city,
+                        'state': this.state,
+                        'district': this.district,
+                        'street': this.street,
+                        'house': this.house,
+                        'apartment': this.apartment
                     })
                         .then(response => {
                             if (response.data.status === 500) {
@@ -729,10 +782,6 @@
                                     console.log(response.data.logMessage)
                                 }
                             } else {
-                                if (response.data.data.barcode) {
-
-                                }
-
                                 if (response.data.data.barcode !== '' ) {
                                     $('input[name="shipment[track_number]"]').val(response.data.data.barcode);
                                     $('input[name="shipment[carrier_title]"]').val('Ukrpost');

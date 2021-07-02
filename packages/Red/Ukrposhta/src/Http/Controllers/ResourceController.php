@@ -3,6 +3,7 @@
 namespace Red\Ukrposhta\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Red\Ukrposhta\Http\UkrPostAPI;
 use Red\Ukrposhta\Models\UkrpostClients;
 use Webkul\Sales\Repositories\OrderRepository;
@@ -83,11 +84,42 @@ class ResourceController extends Controller
             $request = request();
             $data = $request->all();
 
+            $validator = Validator::make($data, [
+                'lastName' => 'required',
+                'firstName' => 'required',
+                'phone' => 'required',
+                'postcode' => 'required',
+                'city' => 'required',
+                'state'=> 'required',
+                'district' =>  'required',
+                'street'=> 'required',
+                'house' => 'required',
+                'apartment'=> 'required'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => 'Error',
+                    'data' => $validator->errors(),
+                ]);
+            }
+
             $order = $this->orderRepository->findOrFail($orderId);
             $cl = UkrpostClients::where(['customer_id' => $order->customer_id])->first();
 
             if (empty($cl)) {
-                $client = $up->getNewClient($data['lastName'], $data['firstName'], '', $order->shipping_address->phone, '_' . $order->customer_id, $order->shipping_address->postcode, $order->shipping_address->state, $order->shipping_address->city, $order->shipping_address->district, $order->shipping_address->street, $order->shipping_address->house, $order->shipping_address->apartment, $order->shipping_address->email);
+                $client = $up->getNewClient(
+                    $data['lastName'],
+                    $data['firstName'],
+                    '',
+                    $data['phone'],
+                    '_' . $order->customer_id,
+                    $data['postcode'], $data['state'],
+                    $data['city'], $data['district'],
+                    $data['street'], $data['house'],
+                    $data['apartment'],
+                    $order->shipping_address->email
+                );
                 if (!empty($client->uuid)) {
                     $cl = new UkrpostClients();
                     $cl->fill([
@@ -108,7 +140,7 @@ class ResourceController extends Controller
                     'middleName' => '',
                     'lastName' => $data['lastName'],
                     'addressId' => $cl->address_id,
-                    'phoneNumber' => '+30635555588',
+                    'phoneNumber' => $data['phone'],
                     'externalId' => $cl->external_id,
                     'counterpartyUuid' => 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a'
                 ];
@@ -152,7 +184,7 @@ class ResourceController extends Controller
                 'message' => $e->getMessage(),
                 'status' => 500,
                 'logMessage' => $e->getMessage()
-            ], 500);
+            ], 200);
         }
 
     }
