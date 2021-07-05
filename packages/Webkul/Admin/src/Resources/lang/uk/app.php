@@ -352,6 +352,7 @@ return [
             'additional-info' => 'Додаткова інформація',
             'postpayd' => 'Післяплата',
             'declared-value' => 'Оголошена цінність',
+            'ttn-created-successfully' => 'ТТН створено успішно',
             'biggest-side' => 'Найбільша сторона, см',
             'parcel-weight' => 'Вага посилки',
             'seatsamount' => 'Кількість місць',

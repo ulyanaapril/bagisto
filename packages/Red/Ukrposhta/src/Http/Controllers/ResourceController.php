@@ -3,9 +3,12 @@
 namespace Red\Ukrposhta\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Red\Ukrposhta\Http\UkrPostAPI;
 use Red\Ukrposhta\Models\UkrpostClients;
+use Webkul\Customer\Repositories\CustomerAddressRepository;
+use Webkul\Sales\Models\Order;
 use Webkul\Sales\Repositories\OrderRepository;
 
 class ResourceController extends Controller
@@ -32,15 +35,24 @@ class ResourceController extends Controller
     protected $orderRepository;
 
     /**
+     * @var CustomerAddressRepository
+     */
+    protected $customerAddressRepository;
+
+    /**
      * Create a new controller instance.
      *
      * @param OrderRepository $orderRepository
+     * @param CustomerAddressRepository $customerAddressRepository
      */
     public function __construct(
-        OrderRepository $orderRepository
+        OrderRepository $orderRepository,
+        CustomerAddressRepository $customerAddressRepository
     )
     {
         $this->orderRepository = $orderRepository;
+
+        $this->customerAddressRepository = $customerAddressRepository;
 
         $this->guard = request()->has('token') ? 'api' : 'customer';
 
@@ -99,8 +111,8 @@ class ResourceController extends Controller
 
             if ($validator->fails()) {
                 return response()->json([
-                    'message' => 'Error',
-                    'data' => $validator->errors(),
+                    'status' => 500,
+                    'message' => $validator->errors()->first(),
                 ]);
             }
 
@@ -114,16 +126,19 @@ class ResourceController extends Controller
                     '',
                     $data['phone'],
                     '_' . $order->customer_id,
-                    $data['postcode'], $data['state'],
-                    $data['city'], $data['district'],
-                    $data['street'], $data['house'],
+                    $data['postcode'],
+                    $data['state'],
+                    $data['city'],
+                    $data['district'],
+                    $data['street'],
+                    $data['house'],
                     $data['apartment'],
                     $order->shipping_address->email
                 );
                 if (!empty($client->uuid)) {
                     $cl = new UkrpostClients();
                     $cl->fill([
-                        'customer_id' => 1,
+                        'customer_id' => $order->customer_id,
                         'uuid' => $client->uuid,
                         'name' => $client->name,
                         'external_id' => $client->externalId,
@@ -131,15 +146,34 @@ class ResourceController extends Controller
                         'address_id' => $client->addressId,
                         'type' => $client->type
                     ])->save();
+                    $this->updateAddressesTable($order, $data);
                 }
             } else {
+                if ($order->shipping_address->postcode != $data['postcode'] || $order->shipping_address->city != $data['city']
+                    || $order->shipping_address->state != $data['state'] || $order->shipping_address->district != $data['district']
+                    || $order->shipping_address->street != $data['street'] || $order->shipping_address->house != $data['house']
+                    || $order->shipping_address->apartment != $data['apartment']) {
+                    $address = $up->newAddress($data['postcode'], $data['state'], $data['district'], $data['city'], $data['street'], $data['house'], $data['apartment'], $cl->external_id);
+                    if (!empty($address->id)) {
+                        $res = $up->putAddressClient($cl->uuid, $address->id);
+                        if (!empty($res->addressId)) {
+                            $cl->fill(['address_id' => $address->id])->save();
+                            $this->updateAddressesTable($order, $data);
+                        } else {
+                            throw new \Exception('Помилка добавлення адресу клієнта');
+                        }
+                    } else {
+                        throw new \Exception('Помилка створення адресу клієнта');
+                    }
+                }
+
                 $params = [
                     'uuid' => $cl->uuid,
                     'name' => $cl->name,
                     'firstName' => $data['firstName'],
                     'middleName' => '',
                     'lastName' => $data['lastName'],
-                    'addressId' => $cl->address_id,
+                    'addressId' => !empty($address->id) ? $address->id : $cl->address_id,
                     'phoneNumber' => $data['phone'],
                     'externalId' => $cl->external_id,
                     'counterpartyUuid' => 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a'
@@ -163,7 +197,7 @@ class ResourceController extends Controller
                 $data['length'] = !empty($data['length']) ? $data['length'] : 10,
                 $data['declaredPrice'],
                 $data['postPay'],
-                $data['description'] = 'test',
+                $data['description'],
                 $data['transferPostPayToBankAccount'],
                 $data['paidByRecipient'],
                 $data['postPayPaidByRecipient']
@@ -171,7 +205,7 @@ class ResourceController extends Controller
 
             if (!empty($s->barcode)) {
                 return response()->json([
-                    'message' => 'ok',
+                    'message' => trans('admin::app.sales.orders.ttn-created-successfully'),
                     'data' => json_decode(json_encode($s), true),
                     'status' => 200
                 ], 200);
@@ -189,13 +223,32 @@ class ResourceController extends Controller
 
     }
 
+
     /**
-     * @param $orderId
+     * @param $order Order
+     * @param $data
      */
-    public function printTtn($orderId){
+    private function updateAddressesTable($order, $data) {
+        DB::table('addresses')
+            ->where(['order_id' => $order->id, 'customer_id' => $order->customer_id, 'address_type' => 'order_shipping'])
+            ->update([
+                'postcode' => $data['postcode'],
+                'state' => $data['state'],
+                'city' => $data['city'],
+                'district' => $data['district'],
+                'street' => $data['street'],
+                'house' => $data['house'],
+                'apartment' => $data['apartment']
+            ]);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function printTtn(Request $request){
+        $trackNumber = $request->input('trackNumber');
         $up = new UkrPostAPI();
-        $order = $this->orderRepository->findOrFail($orderId);
-        $pdf = $up->getSticker100_100('0503076516270');
+        $pdf = $up->getSticker100_100($trackNumber);
         header('Content-type: application/pdf');
         echo '<div style="padding: 10px;    margin: 10px;">' . $pdf . '</div>';
 

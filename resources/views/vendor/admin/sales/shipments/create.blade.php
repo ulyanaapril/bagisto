@@ -578,8 +578,8 @@
                                 class="control select2"
                                 data-vv-as="&quot;{{ __('admin::app.sales.orders.pays-shipping') }}&quot;">
 
-                            <option :value="1">{{ __('admin::app.sales.orders.sender') }}</option>
-                            <option :value="2">{{ __('admin::app.sales.orders.recipient') }}</option>
+                            <option :value="1">{{ __('admin::app.sales.orders.recipient') }}</option>
+                            <option :value="0">{{ __('admin::app.sales.orders.sender') }}</option>
 
                         </select>
                     </div>
@@ -597,8 +597,8 @@
                                 class="control select2"
                                 data-vv-as="&quot;{{ __('admin::app.sales.orders.pays-postage') }}&quot;">
 
-                            <option :value="2">{{ __('admin::app.sales.orders.recipient') }}</option>
-                            <option :value="1">{{ __('admin::app.sales.orders.sender') }}</option>
+                            <option :value="0">{{ __('admin::app.sales.orders.sender') }}</option>
+                            <option :value="1">{{ __('admin::app.sales.orders.recipient') }}</option>
 
                         </select>
                     </div>
@@ -616,7 +616,7 @@
                         </a>
                         <a class="btn btn-sm btn-primary"
                            :class="`${trackNumber == '' ? 'disabled' : ''}`"
-                           href="{{route("red.ukrposhta.print-ttn", ['orderId' => $order->id])}}"
+                           :href="printTtn"
                            target="_blank"
                            type="button">
                             <i class="icon ion-ios-print-outline" data-tooltip="tooltip"></i><span>{{ __('admin::app.sales.orders.print-100') }}</span>
@@ -733,7 +733,7 @@
                     group: 1,
                     enrollPostpayment: 0,
                     paysShipping: 1,
-                    paysPostage: 2,
+                    paysPostage: 0,
                     firstName: '{{$order->shipping_address->first_name}}',
                     lastName: '{{$order->shipping_address->last_name}}',
                     phone: '{{$order->shipping_address->phone}}',
@@ -786,6 +786,7 @@
                                     $('input[name="shipment[track_number]"]').val(response.data.data.barcode);
                                     $('input[name="shipment[carrier_title]"]').val('Ukrpost');
                                     this.trackNumber = response.data.data.barcode;
+                                    this.printTtn = '{{ route("red.ukrposhta.print-ttn") }}' + '?trackNumber=' + this.trackNumber;
                                     $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
                                 }
 
