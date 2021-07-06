@@ -212,9 +212,9 @@
                                 @if ($order->shipping_method == 'np')
                                     <order-shipping-np></order-shipping-np>
                                 @endif
-{{--                                @if ($order->shipping_method == 'justin')--}}
-{{--                                    <order-shipping-justin></order-shipping-justin>--}}
-{{--                                @endif--}}
+                                @if ($order->shipping_method == 'justin')
+                                    <order-shipping-justin></order-shipping-justin>
+                                @endif
                                 @if ($order->shipping_method == 'ukrposhta')
                                     <order-shipping-ukrposhta></order-shipping-ukrposhta>
                                 @endif
@@ -634,28 +634,13 @@
 
             <div class="section-content">
                 <div class="row">
-                    <input type="text" hidden="true" value="this->order->id" name="number">
-                    <input type="text" hidden="true" value="date(Y-m-d)" name="date">
-                    <input type="text" hidden="true" value="32b69b95-9018-11e8-80c1-525400fb7782" name="sender_city_id">
-                    <input type="text" hidden="true" value="RED" name="sender_company">
-                    <input type="text" hidden="true" value="Куковицкий Сергей" name="sender_contact">
-                    <input type="text" hidden="true" value="+380674069080" name="sender_phone">
-                    <input type="text" hidden="true" value=" " name="sender_pick_up_address">
-                    <input type="text" hidden="true" value="true" name="pick_up_is_required">
                     <div class="control-group">
                         <label class="form-control-label">Получатель:</label>
-                        <input type="text" class="control"
-                               value="this->order->middle_name . ' ' . $this->order->name" required
-                               name="receiver">
-                        <input type="text" hidden="true"
-                               value="this->order->middle_name . ' ' . $this->order->name" required
-                               name="receiver_contact" class="control">
+                        <input type="text" class="control" v-model="name" name="receiver">
                     </div>
-
                     <div class="control-group">
                         <label class="control-label">Телефон:</label>
-                        <input type="text" class="control" value="this->order->telephone" required
-                               name="receiver_phone">
+                        <input type="text" class="control" v-model="telephone" name="receiver_phone">
                     </div>
                     <div class="control-group">
                         <label class="form-control-label">Отделение: </label>
@@ -673,8 +658,7 @@
                     </div>
                     <div class="control-group">
                         <label class="form-control-label">Вес посылки: </label>
-                        <input type="text" required class="control" value="" name="weight">
-                        <input type="text" hidden="true" value=1 name="volume">
+                        <input type="text" required class="control" v-model="weight" name="weight">
                     </div>
                     <div class="control-group">
                         <label class="form-control-label">Количество мест: </label>
@@ -686,10 +670,7 @@
                     </div>
                     <div class="control-group">
                         <label class="form-control-label">Оценка: </label>
-                        <input type="text" required class="control"
-                               value="$this->order->FirstPriceOrder()" name="declared_cost">
-                        <input type="text" hidden="true" value="0" name="delivery_amount">
-                        <input type="text" hidden="true" value="0" name="redelivery_amount">
+                        <input type="text" required class="control" v-model="price" name="declared_cost">
                     </div>
                     <div class="control-group">
                         <label class="control-label">Платит за доставку:</label>
@@ -698,16 +679,28 @@
                                                           value="0"><span>Отправитель</span></label>
                             <label class="rdiobox"><input name="delivery_payment_payer" type="radio"
                                                           value="1"><span>Получатель</span></label>
-
                         </div>
                     </div>
-                    <div class="control-group">
-                        <label class="form-control-label">Коментарий: </label>
-                        <input type="text" class="control" value="" name="add_description">
-                    </div>
 
-                    <div class="col-sm-12  text-center mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg">Создать</button>
+                    <div class="informer-widget">
+                        <div class="alert alert-info alert-info-product fade" role="alert">
+                            <span></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="page-action">
+                        <a class="btn btn-sm btn-primary"
+                           @click="createTtn()">{{ __('admin::app.sales.orders.create-ttn') }}
+                        </a>
+                        <a class="btn btn-sm btn-primary"
+                           :class="`${trackNumber == '' ? 'disabled' : ''}`"
+                           :href="printTtn"
+                           target="_blank"
+                           type="button">
+                            <i class="icon ion-ios-print-outline" data-tooltip="tooltip"></i><span>{{ __('admin::app.sales.orders.print-100') }}</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -808,9 +801,60 @@
 
             data: function() {
                 return {
+                    apiKey: '08d0c6b5-1d89-11ea-abe1-0050569b41a9',
+                    trackNumber: "",
+                    printTtn: "",
                     source: "",
+                    name: "{{$order->shipping_address->last_name . ' ' . $order->shipping_address->first_name}}",
+                    telephone: "{{$order->shipping_address->phone}}",
+                    price: 0,
+
+                    receiver: "",
+                    receiver_phone: "",
+                    branch: "",
+                    weight: 0,
+                    count_cargo_places: "",
+                    declared_cost: "",
+                    delivery_payment_payer: "",
                 }
             },
+
+            methods: {
+                createTtn: function () {
+                    this.$http.post("{{ route('red.justin.create-ttn', ['orderId' => $order->id]) }}",
+                        {
+                            'receiver': this.receiver,
+                            'receiver_phone' : this.receiver_phone,
+                            'branch' : this.branch,
+                            'weight' : this.weight,
+                            'count_cargo_places' : this.count_cargo_places,
+                            'declared_cost' : this.declared_cost,
+                            'delivery_payment_payer' : this.delivery_payment_payer,
+                        })
+                        .then(response => {
+                            if (response.data.status === 500) {
+                                $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
+                                if (response.data.logMessage) {
+                                    console.log(response.data.logMessage)
+                                }
+                            } else {
+                                console.log(response.data)
+                                if (response.data.data.data.ttn !== '' ) {
+                                    $('input[name="shipment[track_number]"]').val(response.data.data.data.ttn);
+                                    $('input[name="shipment[carrier_title]"]').val('Justin');
+                                    this.trackNumber = response.data.data.data.ttn;
+                                    this.printTtn = 'https://api.justin.ua/pms/hs/api/v1/printSticker/order?order_number={{$order->id}}' +  '&api_key=' + this.apiKey;
+                                    $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
+                                }
+
+                            }
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        });
+                },
+            },
+
         });
     </script>
     <script>

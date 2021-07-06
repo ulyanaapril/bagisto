@@ -65,60 +65,68 @@ class ResourceController extends Controller
      *                    order_payment_is_required => Boolean, is order payment required
      *
      * @return mixed
+     * @param $orderId
      */
-    public function createTtn() {
-        $arr = [
-            'number' => 11,
-            'date' => date('Y-m-d'),
-            'sender_city_id' => '32b69b95-9018-11e8-80c1-525400fb7782',
-            'sender_company' => 'RED',
-            'sender_contact' => 'Куковицкий Сергей',
-            'sender_phone' => '+380674069080',
-            'sender_pick_up_address' => '',
-            'pick_up_is_required' => false,
-            'sender_branch' => '7204200108',
-            'receiver' => 'Дацер Уляна Василівна',
-            'receiver_contact' => '',
-            'receiver_phone' => '0638876274',
-            'count_cargo_places' => 1,
-            'branch' => '7511202019',
-            'weight' => '0.1',
-            'volume' => '0.1',
-            'declared_cost' => 100,
-            'delivery_amount'=> 100,
-            'redelivery_amount' => 100,
-            'order_amount' => 100,
-            'redelivery_payment_is_required' => false,
-            'redelivery_payment_payer' => 0,
-            'delivery_payment_is_required' => true,
-            'delivery_payment_payer' => 1,
-            'order_payment_is_required' => true
-        ];
+    public function createTtn($orderId) {
+        try {
+            $data = request()->all();
+            $arr = [
+                'number' => $orderId,
+                'date' => date('Y-m-d'),
+                'sender_city_id' => '32b69b95-9018-11e8-80c1-525400fb7782',
+                'sender_company' => 'RED',
+                'sender_contact' => 'Куковицкий Сергей',
+                'sender_phone' => '+380674069080',
+                'sender_pick_up_address' => '',
+                'pick_up_is_required' => false,
+                'sender_branch' => '7204200108',
+                'receiver' => $data['receiver'],
+                'receiver_contact' => '',
+                'receiver_phone' => $data['receiver_phone'],
+                'count_cargo_places' => $data['count_cargo_places'],
+                'branch' => $data['branch'],
+                'weight' => $data['weight'],
+                'volume' => 1,
+                'declared_cost' => $data['declared_cost'],
+                'delivery_amount'=> 0,
+                'redelivery_amount' => 0,
+                'order_amount' => $data['declared_cost'],
+                'redelivery_payment_is_required' => false,
+                'redelivery_payment_payer' => 0,
+                'delivery_payment_is_required' => true,
+                'delivery_payment_payer' => $data['delivery_payment_payer'],
+                'order_payment_is_required' => true
+            ];
 
-        $text = [];
-        $justin = new JustinClass();
-//            $arr = [];
+            $justin = new JustinClass();
 
-//            foreach ($this->post as $k => $p) {
-//                $arr[$k] = $p;
-//            }
             $res = $justin->createOrder($arr);
-            var_dump($res);die;
+
             if ($res['result'] == "success") {
                 $arr['number_ttn'] = $res['data']['ttn'];
-                $arr['number_pms'] = $res['data']['number'];//номер
-                $text = ['result' => true, 'text' => $justin->getOrderStickerLink($arr['number'])];
-                die(json_encode($text));
+                $arr['number_pms'] = $res['data']['number'];
+                return response()->json([
+                    'message' => 'ok',
+                    'data' => $res,
+                    'status' => 200
+                ]);
             } else {
-
                 if (isset($res['errors'])) {
-
-                    $text = ['result' => false, 'text' => '<div class="alert alert-danger" role="alert">' . implode("<br>", $res['errors']) . '</div>'];
+                    return response()->json([
+                        'message' => 'Помилка створення ТТН',
+                        'data' => $res['errors'],
+                        'status' => 500
+                    ]);
                 }
-                die(json_encode($text));
             }
-        $this->view->list = wsActiveRecord::useStatic('JustinDepartments')->findAll();
-        echo $this->render('justin/new.php', 'index.php');
+        } catch (\Exception $e) {
+            return response()->json([
+               'message' => $e->getMessage(),
+               'status' => 500,
+               'logMessage' => $e->getMessage()
+            ]);
+        }
+
     }
 
     /**
