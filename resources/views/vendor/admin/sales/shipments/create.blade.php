@@ -362,7 +362,37 @@
 
             <div class="section-content">
                 <div class="row">
-                    <div class="col-6 control-group">
+                    <div class="control-group">
+                        <label for="delivery-ajax-city-np" class="mandatory">Місто</label>
+                        <select
+                                style="width:70%"
+                                class="delivery-ajax-city-np form-control control"
+                                name="delivery-ajax-city-np"
+                                :v-model="city_ref">
+                            <option v-for='(el, index) in city' :value="el.id">
+                                @{{ el.text }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="delivery-ajax-warehouse-np" class="mandatory">
+                            Виберіть відділення
+                        </label>
+
+                        <select
+                                type="text"
+                                id="delivery-ajax-warehouse-np"
+                                name="delivery-ajax-warehouse-np"
+                                class="form-control control"
+                                v-model="warehouse_ref"
+                                data-vv-as="&quot;{{ __('shop::app.checkout.onepage.warehouse') }}&quot;">
+
+                            <option v-for='(el, index) in warehouse' :value="el.id">
+                                @{{ el.text }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="control-group">
                         <label for="cost" class="mandatory">
                             {{ __('admin::app.sales.orders.cost') }}
                         </label>
@@ -377,7 +407,7 @@
                                 v-model="cost"
                                 data-vv-as="&quot;{{ __('admin::app.sales.orders.cost') }}&quot;"/>
                     </div>
-                    <div class="col-6 control-group">
+                    <div class="control-group">
                         <label for="seatsamount" class="mandatory">
                             {{ __('admin::app.sales.orders.seatsamount') }}
                         </label>
@@ -392,7 +422,7 @@
                                 v-model="seatsamount"
                                 data-vv-as="&quot;{{ __('admin::app.sales.orders.seatsamount') }}&quot;"/>
                     </div>
-                    <div class="col-6 control-group">
+                    <div class="control-group">
                         <label for="weight" class="mandatory">
                             {{ __('admin::app.sales.orders.weight') }}
                         </label>
@@ -412,7 +442,7 @@
 
                         </select>
                     </div>
-                    <div class="col-6 control-group">
+                    <div class="control-group">
                         <label for="сargotype" class="mandatory">
                             {{ __('admin::app.sales.orders.сargoеype') }}
                         </label>
@@ -941,7 +971,8 @@
                 this.npKey = $('#npKey').val();
                 this.npTrack = $('#npTrack').val();
                 this.trackNumber = $('input[name="shipment[track_number]"]').val();
-                this.printTtn = 'https://my.novaposhta.ua/orders/printDocument/orders[]/' + this.trackNumber + '/type/html/apiKey/' + this.npKey
+                this.printTtn = 'https://my.novaposhta.ua/orders/printDocument/orders[]/' + this.trackNumber + '/type/html/apiKey/' + this.npKey;
+                this.getNpCity()
             },
 
             template: '#order-shipping-np-template',
@@ -959,13 +990,24 @@
                     trackNumber: '',
                     printTtn: '',
                     npKey: "{{env('NP_KEY')}}",
-                    npTrack : ''
+                    npTrack : '',
+                    city: [],
+                    warehouse: [],
+                    city_ref: "{{$order->shipping_address->city_ref}}",
+                    warehouse_ref: "{{$order->shipping_address->warehouse_ref}}",
                 }
             },
 
             methods: {
                 createTtn: function () {
-                    this.$http.post("{{ route('red.np.create-ttn', ['orderId' => $order->id]) }}", {'cost': this.cost, 'weight': this.weight, 'cargotype': this.cargotype, 'seatsamount': this.seatsamount})
+                    this.$http.post("{{ route('red.np.create-ttn', ['orderId' => $order->id]) }}", {
+                        'cost': this.cost,
+                        'weight': this.weight,
+                        'cargotype': this.cargotype,
+                        'seatsamount': this.seatsamount,
+                        'city_ref' : this.city_ref,
+                        'warehouse_ref' : this.warehouse_ref
+                    })
                         .then(response => {
                             if (response.data.status === 500) {
                                 $(".alert-info-product:first").clone().prependTo(".informer-widget").addClass('show').find('span:first').html(response.data.message);
@@ -986,6 +1028,53 @@
                         .catch(error => {
                             console.log(error)
                         });
+                },
+                initSelect2: function() {
+                    var citiesUrl = "{{route('red.np.cities')}}";
+                    var vue = this;
+                    $('.delivery-ajax-city-np').select2({
+                        minimumInputLength: 3,
+                        placeholder: 'Виберіть місто',
+                        "pagination": {
+                            "more": true
+                        },
+                        ajax: {
+                            url: citiesUrl,
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function (data) {
+                                return {
+                                    results: data
+                                };
+                            },
+                            cache: true
+                        }
+                    }).on("change", function (e) {
+                        vue.city_ref = $(e.target).val();
+                        vue.fetchWarehouses();
+                        vue.warehouse = '';
+                    });
+                },
+                getNpCity: function () {
+                    let npCity = `{{route('red.np.city')}}?q=` + this.city_ref;
+
+                    this.$http.get(npCity)
+                        .then(response => {
+                            this.city = response.data;
+                            this.initSelect2();
+                            this.fetchWarehouses()
+                        })
+                        .catch(function (error) {});
+                },
+
+                fetchWarehouses: function () {
+                    var warehousesUrl = "{{route('red.np.warehouses')}}" + "?q=" + this.city_ref;
+
+                    this.$http.get(warehousesUrl)
+                        .then(response => {
+                            this.warehouse = response.data;
+                        })
+                        .catch(function (error) {});
                 },
             },
         });

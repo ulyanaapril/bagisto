@@ -3,7 +3,9 @@
 namespace Red\NP\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Red\NP\Http\NovaPoshta;
+use Webkul\Sales\Models\Order;
 use Webkul\Sales\Models\OrderAddress;
 use Webkul\Sales\Repositories\OrderRepository;
 
@@ -84,6 +86,30 @@ class ResourceController extends Controller
         }
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * q - city_ref
+     */
+    public function city(Request $request) {
+        if (!empty($search = $request->get('q'))) {
+            $np = new NovaPoshta('uk');
+
+            $city = $np->getCities($page = 0, $findByString = '', $search);
+
+            $city = $city['data'];
+
+            $city = array_map(function ($city) {
+                return array(
+                    'id' => $city['Ref'],
+                    'text' => $city['Description']
+                );
+            }, $city);
+
+            return response()->json($city);
+        }
+    }
+
 
     /**
      * @param $orderId
@@ -156,12 +182,12 @@ class ResourceController extends Controller
                 'CounterpartyType' => 'PrivatePerson',
                 'FirstName' => $customerAddress->first_name,
                 'LastName' => $customerAddress->last_name,
-                'RecipientsPhone' => '0638876274',
-                'Phone' => '0638876274',
-                'City' => $customerAddress->city_ref,
-                'CityRecipient' => $customerAddress->city_ref,
-                'RecipientAddress' => $customerAddress->warehouse_ref,
-                'Warehouse' => $customerAddress->warehouse_ref,
+                'RecipientsPhone' => $customerAddress->phone,
+                'Phone' => $customerAddress->phone,
+                'City' => $data['city_ref'],
+                'CityRecipient' => $data['city_ref'],
+                'RecipientAddress' => $data['warehouse_ref'],
+                'Warehouse' => $data['warehouse_ref'],
 
             );
             $params = array(
@@ -186,6 +212,7 @@ class ResourceController extends Controller
 
             $res = $np->newInternetDocument($sender, $recipient, $params);
             if (!empty($res)) {
+                $this->updateAddressesTable($order, $data);
                 $res['message'] = trans('admin::app.sales.orders.successful-created');
                 $res['status'] = 200;
                 return response()->json($res);
@@ -199,6 +226,19 @@ class ResourceController extends Controller
         }
 
 
+    }
+
+    /**
+     * @param $order Order
+     * @param $data
+     */
+    private function updateAddressesTable($order, $data) {
+        DB::table('addresses')
+            ->where(['order_id' => $order->id, 'customer_id' => $order->customer_id, 'address_type' => 'order_shipping'])
+            ->update([
+                'city_ref' => $data['city_ref'],
+                'warehouse_ref' => $data['warehouse_ref']
+            ]);
     }
 
 }
