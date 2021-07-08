@@ -958,7 +958,7 @@
                     seatsamount: 1,
                     trackNumber: '',
                     printTtn: '',
-                    npKey: '',
+                    npKey: "{{env('NP_KEY')}}",
                     npTrack : ''
                 }
             },
