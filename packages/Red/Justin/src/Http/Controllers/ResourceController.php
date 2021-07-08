@@ -3,8 +3,12 @@
 namespace Red\Justin\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Red\Justin\Http\JustinClass;
 use Red\Justin\Models\JustinDepartments;
+use Webkul\Sales\Models\Order;
+use Webkul\Sales\Repositories\OrderRepository;
 
 class ResourceController extends Controller
 {
@@ -22,13 +26,25 @@ class ResourceController extends Controller
      */
     protected $_config;
 
+
+    /**
+     * OrderRepository object
+     *
+     * @var \Webkul\Sales\Repositories\OrderRepository
+     */
+    protected $orderRepository;
+
     /**
      * Create a new controller instance.
      *
-     * @return void
+     * @param OrderRepository $orderRepository
      */
-    public function __construct()
+    public function __construct(
+        OrderRepository $orderRepository
+    )
     {
+        $this->orderRepository = $orderRepository;
+
         $this->guard = request()->has('token') ? 'api' : 'customer';
 
         $this->_config = request('_config');
@@ -69,7 +85,26 @@ class ResourceController extends Controller
      */
     public function createTtn($orderId) {
         try {
+            $order = $this->orderRepository->findOrFail($orderId);
             $data = request()->all();
+
+            $validator = Validator::make($data, [
+                'receiver' => 'required',
+                'receiver_phone' => 'required',
+                'count_cargo_places' => 'required',
+                'weight' => 'required|numeric|min:0|not_in:0',
+                'declared_cost' => 'required|numeric|min:0|not_in:0',
+                'delivery_payment_payer' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => 500,
+                    'message' => $validator->errors()->first(),
+                ]);
+            }
+
+            $branch = JustinDepartments::where(['uuid' => $data['warehouse_ref']])->first()->branch;
             $arr = [
                 'number' => $orderId,
                 'date' => date('Y-m-d'),
@@ -84,8 +119,8 @@ class ResourceController extends Controller
                 'receiver_contact' => '',
                 'receiver_phone' => $data['receiver_phone'],
                 'count_cargo_places' => $data['count_cargo_places'],
-                'branch' => $data['branch'],
-                'weight' => $data['weight'],
+                'branch' => $branch,
+                'weight' => !empty($data['weight']) ? $data['weight'] : 1,
                 'volume' => 1,
                 'declared_cost' => $data['declared_cost'],
                 'delivery_amount'=> 0,
@@ -102,19 +137,26 @@ class ResourceController extends Controller
 
             $res = $justin->createOrder($arr);
 
-            if ($res['result'] == "success") {
+            if (!empty($res['result']) && $res['result'] == "success") {
                 $arr['number_ttn'] = $res['data']['ttn'];
                 $arr['number_pms'] = $res['data']['number'];
+                $this->updateAddressesTable($order, $data);
                 return response()->json([
-                    'message' => 'ok',
+                    'message' => 'ТТН створено успішно',
                     'data' => $res,
                     'status' => 200
                 ]);
             } else {
-                if (isset($res['errors'])) {
+                if (!empty($res['result']) && $res['result'] == "error" && !empty($res['errors'])) {
                     return response()->json([
-                        'message' => 'Помилка створення ТТН',
+                        'message' => $res['errors'][0]['error'],
                         'data' => $res['errors'],
+                        'status' => 500
+                    ]);
+                } else {
+                    return response()->json([
+                        'message' => 'Помилка сервера',
+                        'data' => $res,
                         'status' => 500
                     ]);
                 }
@@ -127,6 +169,19 @@ class ResourceController extends Controller
             ]);
         }
 
+    }
+
+    /**
+     * @param $order Order
+     * @param $data
+     */
+    private function updateAddressesTable($order, $data) {
+        DB::table('addresses')
+            ->where(['order_id' => $order->id, 'customer_id' => $order->customer_id, 'address_type' => 'order_shipping'])
+            ->update([
+                'city_ref' => $data['city_ref'],
+                'warehouse_ref' => $data['warehouse_ref']
+            ]);
     }
 
     /**
@@ -180,8 +235,7 @@ class ResourceController extends Controller
 
 
         if (!empty($q = $request->get('term'))) {
-            $cities = JustinDepartments::where('city_name', 'like', '%' . $q . '%')->get()->toArray();
-
+            $cities = JustinDepartments::where('city_name', 'like', '%' . $q . '%')->get()->unique('city_uuid')->toArray();
             $cities = array_map(function ($city) {
                 return array(
                     'id' => $city['city_uuid'],
@@ -195,6 +249,44 @@ class ResourceController extends Controller
 
         }
 
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function city(Request $request) {
+        if (!empty($search = $request->get('q'))) {
+            $city = JustinDepartments::where(['city_uuid' => $search])->take(1)->get()->toArray();
+
+            $city = array_map(function ($city) {
+                return array(
+                    'id' => $city['city_uuid'],
+                    'text' => $city['city_name']
+                );
+            }, $city);
+
+            return response()->json($city);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function warehouse(Request $request) {
+        if (!empty($search = $request->get('q'))) {
+            $warehouse = JustinDepartments::where(['city_uuid' => $search])->get()->toArray();
+
+            $warehouse = array_map(function ($warehouse) {
+                return array(
+                    'id' => $warehouse['uuid'],
+                    'text' => $warehouse['description'] . ', ' . $warehouse['address'],
+                );
+            }, $warehouse);
+
+            return response()->json($warehouse);
+        }
     }
 
     /**

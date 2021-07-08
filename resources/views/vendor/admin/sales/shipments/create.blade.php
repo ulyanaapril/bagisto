@@ -636,49 +636,65 @@
                 <div class="row">
                     <div class="control-group">
                         <label class="form-control-label">Получатель:</label>
-                        <input type="text" class="control" v-model="name" name="receiver">
+                        <input type="text" class="control" v-model="receiver" name="receiver">
                     </div>
                     <div class="control-group">
                         <label class="control-label">Телефон:</label>
-                        <input type="text" class="control" v-model="telephone" name="receiver_phone">
+                        <input type="text" class="control" v-model="receiver_phone" name="receiver_phone">
                     </div>
-                    <div class="control-group">
-                        <label class="form-control-label">Отделение: </label>
-                        <select class="control select2-show-search" name="branch" id="branch"
-                                data-placeholder="Выберите Отделение" required tabindex="-1">
-                            <option label="Выберите Отделение"></option>
-                            {{--                        <?php--}}
-                            {{--                        foreach ($this->list as $c) { ?>--}}
-                            {{--                        <option value="<?=$c->branch?>" <?php if ($c->branch == JustinDepartmentToOrder::getUuid($this->order->id)) {--}}
-                            {{--                            echo 'selected';--}}
-                            {{--                        }?> ><?=$c->depart_descr . ' обл. ' . $c->address?></option>--}}
-                            {{--                        <?php }--}}
-                            {{--                        ?>--}}
+                    <div  class="control-group">
+                        <label for="delivery-ajax-city-justin" class="mandatory">Місто</label>
+                        <select
+                                style="width:70%"
+                                class="delivery-ajax-city-justin form-control control"
+                                name="delivery-ajax-city-justin"
+                                :v-model="city_ref">
+                            <option v-for='(el, index) in city' :value="el.id">
+                                @{{ el.text }}
+                            </option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <label class="form-control-label">Вес посылки: </label>
+                        <label for="delivery-ajax-warehouse-justin" class="mandatory">
+                            Виберіть відділення
+                        </label>
+
+                        <select
+                                type="text"
+                                id="delivery-ajax-warehouse-justin"
+                                name="delivery-ajax-warehouse-justin"
+                                class="form-control control"
+                                v-model="warehouse_ref"
+                                data-vv-as="&quot;{{ __('shop::app.checkout.onepage.warehouse') }}&quot;">
+
+                            <option v-for='(el, index) in warehouse' :value="el.id">
+                                @{{ el.text }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="form-control-label">Вага посилки: </label>
                         <input type="text" required class="control" v-model="weight" name="weight">
                     </div>
                     <div class="control-group">
-                        <label class="form-control-label">Количество мест: </label>
-                        <select class="control" name="count_cargo_places" required>
+                        <label class="form-control-label">Кількість місць: </label>
+                        <select class="control" name="count_cargo_places" v-model="count_cargo_places" required>
                             <option value="1" selected>1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
                         </select>
                     </div>
                     <div class="control-group">
-                        <label class="form-control-label">Оценка: </label>
-                        <input type="text" required class="control" v-model="price" name="declared_cost">
+                        <label class="form-control-label">Оцінка: </label>
+                        <input type="text" required class="control" v-model="declared_cost" name="declared_cost">
                     </div>
                     <div class="control-group">
-                        <label class="control-label">Платит за доставку:</label>
+                        <label class="control-label">Оплачує доставку:</label>
                         <div>
-                            <label class="rdiobox"><input name="delivery_payment_payer" checked type="radio"
-                                                          value="0"><span>Отправитель</span></label>
-                            <label class="rdiobox"><input name="delivery_payment_payer" type="radio"
-                                                          value="1"><span>Получатель</span></label>
+                            <select class="control" name="delivery_payment_payer" v-model="delivery_payment_payer" required>
+                                <option value="0" selected>Відправник</option>
+                                <option value="1">Одержувач</option>
+                            </select>
                         </div>
                     </div>
 
@@ -799,23 +815,28 @@
 
             inject: ['$validator'],
 
+            mounted: function () {
+                this.getJustinCity()
+            },
+
             data: function() {
                 return {
                     apiKey: '08d0c6b5-1d89-11ea-abe1-0050569b41a9',
                     trackNumber: "",
                     printTtn: "",
                     source: "",
-                    name: "{{$order->shipping_address->last_name . ' ' . $order->shipping_address->first_name}}",
                     telephone: "{{$order->shipping_address->phone}}",
                     price: 0,
-
-                    receiver: "",
-                    receiver_phone: "",
-                    branch: "",
-                    weight: 0,
-                    count_cargo_places: "",
-                    declared_cost: "",
-                    delivery_payment_payer: "",
+                    receiver: "{{$order->shipping_address->last_name . ' ' . $order->shipping_address->first_name}}",
+                    receiver_phone: "{{$order->shipping_address->phone}}",
+                    weight: 1,
+                    count_cargo_places: 1,
+                    declared_cost: 1,
+                    delivery_payment_payer: 0,
+                    city: [],
+                    warehouse: [],
+                    city_ref: "{{$order->shipping_address->city_ref}}",
+                    warehouse_ref: "{{$order->shipping_address->warehouse_ref}}",
                 }
             },
 
@@ -825,11 +846,12 @@
                         {
                             'receiver': this.receiver,
                             'receiver_phone' : this.receiver_phone,
-                            'branch' : this.branch,
                             'weight' : this.weight,
                             'count_cargo_places' : this.count_cargo_places,
                             'declared_cost' : this.declared_cost,
                             'delivery_payment_payer' : this.delivery_payment_payer,
+                            'city_ref' : this.city_ref,
+                            'warehouse_ref' : this.warehouse_ref
                         })
                         .then(response => {
                             if (response.data.status === 500) {
@@ -852,6 +874,62 @@
                         .catch(error => {
                             console.log(error)
                         });
+                },
+                getJustinCity: function () {
+                    let justinCity = `{{route('red.justin.city')}}?q=` + this.city_ref;
+
+                    this.$http.get(justinCity)
+                        .then(response => {
+                            this.city = response.data;
+                            this.initSelect2();
+                            this.getJustinWarehouse()
+                        })
+                        .catch(function (error) {});
+                },
+                getJustinWarehouse: function () {
+                    let justinWarehouse = `{{route('red.justin.warehouse')}}?q=` + this.city_ref;
+
+                    this.$http.get(justinWarehouse)
+                        .then(response => {
+                            this.warehouse = response.data;
+                        })
+                        .catch(function (error) {});
+                },
+                initSelect2: function() {
+                    var citiesUrl = "{{route('red.justin.cities')}}";
+                    var vue = this;
+                    $('.delivery-ajax-city-justin').select2({
+                        minimumInputLength: 3,
+                        placeholder: 'Виберіть місто',
+                        "pagination": {
+                            "more": true
+                        },
+                        ajax: {
+                            url: citiesUrl,
+                            dataType: 'json',
+                            delay: 250,
+                            processResults: function (data) {
+                                return {
+                                    results: data
+                                };
+                            },
+                            cache: true
+                        }
+                    }).on("change", function (e) {
+                        vue.city_ref = $(e.target).val();
+                        vue.fetchWarehouses();
+                        vue.warehouse = '';
+                    });
+                },
+
+                fetchWarehouses: function () {
+                    var warehousesUrl = "{{route('red.justin.warehouses')}}" + "?q=" + this.city_ref;
+
+                    this.$http.get(warehousesUrl)
+                        .then(response => {
+                            this.warehouse = response.data;
+                        })
+                        .catch(function (error) {});
                 },
             },
 
@@ -928,6 +1006,8 @@
         });
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
 
 @endpush
