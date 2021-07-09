@@ -16,6 +16,7 @@ class DeliveryPointServiceProvider extends ServiceProvider
         include __DIR__ . '/../Http/routes.php';
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
         $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'delivery-point');
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'delivery-point');
     }
 
     /**
@@ -41,6 +42,10 @@ class DeliveryPointServiceProvider extends ServiceProvider
 
         $this->mergeConfigFrom(
             dirname(__DIR__) . '/Config/system.php', 'core'
+        );
+
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/menu.php', 'menu.admin'
         );
     }
 }
