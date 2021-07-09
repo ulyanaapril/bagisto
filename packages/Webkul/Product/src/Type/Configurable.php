@@ -522,8 +522,10 @@ class Configurable extends AbstractType
      */
     public function compareOptions($options1, $options2)
     {
-        if ($this->product->id != $options2['product_id']) {
-            return false;
+        if (!empty($options2['product_id'])) {
+            if ($this->product->id != $options2['product_id']) {
+                return false;
+            }
         }
 
         if (isset($options1['selected_configurable_option']) && isset($options2['selected_configurable_option'])) {

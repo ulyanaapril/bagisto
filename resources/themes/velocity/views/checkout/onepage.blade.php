@@ -718,6 +718,9 @@
                         if (this.selected_shipping_method === 'np' || this.selected_shipping_method === 'justin') {
                             this.initSelect2();
                         }
+                        if (this.selected_shipping_method === 'deliverypoint') {
+                            this.fetchWarehouses()
+                        }
                     },
                     validateMethod: function () {
                         this.$parent.validateForm('shipping-form');

@@ -219,6 +219,32 @@
                                     <br>
 
                                 @endif
+                                @if ($rate->carrier == 'deliverypoint')
+                                    <div class="delivery-{{$rate->carrier}} col-6" hidden>
+                                        <div :class="`col-12 form-field ${errors.has('shipping-form.delivery-ajax-warehouse-{{$rate->carrier}}') ? 'has-error' : ''}`">
+                                            <label for="delivery-ajax-warehouse-{{$rate->carrier}}" class="mandatory">
+                                                Виберіть відділення
+                                            </label>
+
+                                            <select
+                                                    type="text"
+                                                    id="delivery-ajax-warehouse-{{$rate->carrier}}"
+                                                    name="delivery-ajax-warehouse-{{$rate->carrier}}"
+                                                    v-validate=" this.selected_shipping_method == '{{$rate->carrier}}' ? 'required' : '' "
+                                                    class="form-control select2"
+                                                    v-model="warehouse"
+                                                    @change="validateMethod()"
+                                                    data-vv-as="&quot;{{ __('shop::app.checkout.onepage.warehouse') }}&quot;">
+
+                                                <option :value="null" disabled></option>
+
+                                                <option v-for='(warehouse, index) in warehouses' :value="warehouse.id">
+                                                    @{{ warehouse.text }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endif
 
                             </div>
 

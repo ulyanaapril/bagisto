@@ -287,6 +287,7 @@ return [
         Red\NP\Providers\NPServiceProvider::class,
         Red\Ukrposhta\Providers\UkrposhtaServiceProvider::class,
         Red\Justin\Providers\JustinServiceProvider::class,
+        Red\DeliveryPoint\Providers\DeliveryPointServiceProvider::class,
         Red\Privat24\Providers\Privat24ServiceProvider::class,
         Red\Visa\Providers\VisaServiceProvider::class
     ],
