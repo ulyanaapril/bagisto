@@ -149,15 +149,9 @@ class OnepageController extends Controller
     {
         $shippingMethod = request()->get('shipping_method');
 
-        $postcode = request()->get('postcode');
-        $state = request()->get('state');
-        $city = request()->get('city');
-        $district = request()->get('district');
-        $street = request()->get('street');
-        $house = request()->get('house');
-        $apartment = request()->get('apartment');
+        $warehouse = request()->get('warehouse_ref');
 
-        if (empty($postcode) || empty($state) || empty($city) || empty($district) || empty($street) || empty($house) || empty($apartment)) {
+        if (empty($warehouse)) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
         }
 
@@ -202,15 +196,9 @@ class OnepageController extends Controller
      */
     public function saveOrder()
     {
-        $postcode = request()->get('postcode');
-        $state = request()->get('state');
-        $city = request()->get('city');
-        $district = request()->get('district');
-        $street = request()->get('street');
-        $house = request()->get('house');
-        $apartment = request()->get('apartment');
+        $warehouse = request()->get('warehouse_ref');
 
-        if (empty($postcode) || empty($state) || empty($city) || empty($district) || empty($street) || empty($house) || empty($apartment)) {
+        if (empty($warehouse)) {
             return response()->json(['redirect_url' => route('shop.checkout.cart.index')], 403);
         }
 
@@ -240,17 +228,8 @@ class OnepageController extends Controller
                 'address_type' => OrderAddress::ADDRESS_TYPE_SHIPPING
             ])->first();
             if (!empty($customerAddress)) {
-                $customerAddress->fillable(array_merge($customerAddress->getFillable(),['district', 'street', 'house', 'apartment']));
-                $customerAddress->fill(
-                    [
-                        'postcode' => $postcode,
-                        'state' => $state,
-                        'city' => $city,
-                        'district' => $district,
-                        'street' => $street,
-                        'house' => $house,
-                        'apartment' => $apartment
-                    ])->save();
+                $customerAddress->fillable(array_merge($customerAddress->getFillable(),['warehouse_ref']));
+                $customerAddress->fill(['warehouse_ref' => $warehouse])->save();
             }
         }
 
