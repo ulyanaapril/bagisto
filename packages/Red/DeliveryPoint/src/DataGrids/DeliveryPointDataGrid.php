@@ -29,7 +29,7 @@ class DeliveryPointDataGrid extends DataGrid
     {
         $this->addColumn([
             'index'      => 'id',
-            'label'      => trans('admin::app.datagrid.id'),
+            'label'      => 'ID',
             'type'       => 'number',
             'searchable' => false,
             'sortable'   => true,
@@ -38,7 +38,7 @@ class DeliveryPointDataGrid extends DataGrid
 
         $this->addColumn([
             'index'      => 'address',
-            'label'      => trans('admin::app.datagrid.name'),
+            'label'      => trans('delivery-point::app.address'),
             'type'       => 'string',
             'searchable' => true,
             'sortable'   => true,
@@ -47,7 +47,7 @@ class DeliveryPointDataGrid extends DataGrid
 
         $this->addColumn([
             'index'      => 'active',
-            'label'      => trans('admin::app.datagrid.status'),
+            'label'      => trans('delivery-point::app.active'),
             'type'       => 'boolean',
             'sortable'   => true,
             'searchable' => true,
@@ -76,7 +76,7 @@ class DeliveryPointDataGrid extends DataGrid
             'title'        => trans('admin::app.datagrid.delete'),
             'method'       => 'POST',
             'route'        => 'admin.deliverypoint.delete',
-            'confirm_text' => trans('ui::app.datagrid.massaction.delete', ['resource' => 'product']),
+            'confirm_text' => trans('ui::app.datagrid.massaction.delete', ['name' => trans('delivery-point::app.delivery-point')]),
             'icon'         => 'icon trash-icon',
             'function'     => 'deleteFunction($event, "delete")'
         ]);

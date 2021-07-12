@@ -8,4 +8,6 @@ return [
     'delivery-points' => 'Магазини',
     'save-delivery-point-btn' => 'Створити магазин',
     'edit-delivery-point-btn' => 'Редагувати магазин',
+    'delivery-point' => 'магазин'
+
 ];

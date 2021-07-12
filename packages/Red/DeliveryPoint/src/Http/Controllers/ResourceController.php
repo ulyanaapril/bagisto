@@ -88,7 +88,7 @@ class ResourceController extends Controller
 
         $point = StoresDepartments::create($data);
 
-        session()->flash('success', trans('admin::app.response.create-success', ['name' => 'DeliveryPoint']));
+        session()->flash('success', trans('admin::app.response.create-success', ['name' => trans('delivery-point::app.delivery-point')]));
 
         return redirect()->route('admin.deliverypoint.index');
     }
@@ -131,7 +131,7 @@ class ResourceController extends Controller
                 'type' => 1,
             ]);
 
-        session()->flash('success', trans('admin::app.response.update-success', ['name' => 'DeliveryPoint']));
+        session()->flash('success', trans('admin::app.response.update-success', ['name' => trans('delivery-point::app.delivery-point')]));
 
         return redirect()->route('admin.deliverypoint.index');
     }
@@ -150,11 +150,11 @@ class ResourceController extends Controller
 
             $point->delete();
 
-            session()->flash('success', trans('admin::app.response.delete-success', ['name' => 'DeliveryPoint']));
+            session()->flash('success', trans('admin::app.response.delete-success', ['name' => trans('delivery-point::app.delivery-point')]));
 
             return response()->json(['message' => true], 200);
         } catch (\Exception $e) {
-            session()->flash('error', trans('admin::app.response.delete-failed', ['name' => 'DeliveryPoint']));
+            session()->flash('error', trans('admin::app.response.delete-failed', ['name' => trans('delivery-point::app.delivery-point')]));
         }
 
         return response()->json(['message' => false], 400);
@@ -180,13 +180,13 @@ class ResourceController extends Controller
                     $point->delete();
 
                 } catch (\Exception $e) {
-                    session()->flash('error', trans('admin::app.response.delete-failed', ['name' => 'DeliveryPoint']));
+                    session()->flash('error', trans('admin::app.response.delete-failed', ['name' => trans('delivery-point::app.delivery-point')]));
                 }
             }
         }
 
         if (count($pointIds) != 1 || $suppressFlash == true) {
-            session()->flash('success', trans('admin::app.datagrid.mass-ops.delete-success', ['resource' => 'DeliveryPoint']));
+            session()->flash('success', trans('admin::app.datagrid.mass-ops.delete-success', ['resource' => trans('delivery-point::app.delivery-point')]));
         }
 
         return redirect()->route('admin.deliverypoint.index');
@@ -201,8 +201,8 @@ class ResourceController extends Controller
 
         $departments = array_map(function($department) {
             return array(
-                'id' => $department['uuid'],
-                'text' => $department['depart_descr'] . ' ' . $department['address']
+                'id' => $department['id'],
+                'text' => $department['address']
             );
         }, $departments);
 
