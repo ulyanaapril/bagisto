@@ -13,15 +13,15 @@
             <div class="page-header">
                 <div class="page-title">
                     <h1>
-                        <i class="icon angle-left-icon back-link" onclick="window.location = '{{ route('admin.catalog.categories.index') }}'"></i>
+                        <i class="icon angle-left-icon back-link" onclick="window.location = '{{ route('admin.deliverypoint.index') }}'"></i>
 
-                        {{ __('admin::app.catalog.categories.edit-title') }}
+                        {{ __('delivery-point::app.edit-delivery-point-btn') }}
                     </h1>
                 </div>
 
                 <div class="page-action">
                     <button type="submit" class="btn btn-lg btn-primary">
-                        {{ __('admin::app.catalog.categories.save-btn-title') }}
+                        {{ __('delivery-point::app.edit-delivery-point-btn') }}
                     </button>
                 </div>
             </div>
@@ -31,38 +31,34 @@
                     @csrf()
                     <input name="_method" type="hidden" value="PUT">
 
-                    <accordian :title="'{{ __('admin::app.catalog.categories.description-and-images') }}'" :active="true">
-                        <div slot="body">
+                    <div slot="body">
 
-                            <div class="control-group" :class="[errors.has('active') ? 'has-error' : '']">
-                                <label for="active" class="required">{{ __('admin::app.catalog.categories.display-mode') }}</label>
-                                <select class="control" v-validate="'required'" id="active" name="active" data-vv-as="&quot;{{ __('admin::app.catalog.categories.display-mode') }}&quot;">
-                                    <option value="1" {{ $category->active == 1 ? 'selected' : '' }}>
-                                        Так
-                                    </option>
-                                    <option value="0" {{ $category->display_mode == 0 ? 'selected' : '' }}>
-                                        Ні
-                                    </option>
-                                </select>
-                                <span class="control-error" v-if="errors.has('active')">@{{ errors.first('active') }}</span>
-                            </div>
-
-{{--                            <description></description>--}}
-
-                            <div class="control-group" :class="[errors.has('address') ? 'has-error' : '']">
-                                <label for="address" :class="'required'">{{ __('admin::app.catalog.categories.description') }}</label>
-                                <textarea v-validate="'required'" class="control" id="address" name="address" data-vv-as="&quot;{{ __('admin::app.catalog.categories.description') }}&quot;">{{ old('address')}}</textarea>
-                                <span class="control-error" v-if="errors.has('address')">@{{ errors.first('address') }}</span>
-                            </div>
-
-                            <div class="control-group" :class="[errors.has('info') ? 'has-error' : '']">
-                                <label for="info" :class="'required'">{{ __('admin::app.catalog.categories.description') }}</label>
-                                <textarea v-validate="'required'" class="control" id="info" name="info" data-vv-as="&quot;{{ __('admin::app.catalog.categories.description') }}&quot;">{{ old('info') }}</textarea>
-                                <span class="control-error" v-if="errors.has('info')">@{{ errors.first('info') }}</span>
-                            </div>
-
+                        <div class="control-group" :class="[errors.has('active') ? 'has-error' : '']">
+                            <label for="active" class="required">{{ __('delivery-point::app.active') }}</label>
+                            <select class="control" v-validate="'required'" id="active" name="active" data-vv-as="&quot;{{ __('delivery-point::app.active') }}&quot;">
+                                <option value="1" {{ old('address', $point->active) == 1 ? 'selected' : '' }}>
+                                    Так
+                                </option>
+                                <option value="0" {{ old('address', $point->active) == 0 ? 'selected' : '' }}>
+                                    Ні
+                                </option>
+                            </select>
+                            <span class="control-error" v-if="errors.has('active')">@{{ errors.first('active') }}</span>
                         </div>
-                    </accordian>
+
+                        <div class="control-group" :class="[errors.has('address') ? 'has-error' : '']">
+                            <label for="address" :class="'required'">{{ __('delivery-point::app.address') }}</label>
+                            <textarea v-validate="'required'" class="control" id="address" name="address" data-vv-as="&quot;{{ __('delivery-point::app.address') }}&quot;">{{ old('address', $point->address)}}</textarea>
+                            <span class="control-error" v-if="errors.has('address')">@{{ errors.first('address') }}</span>
+                        </div>
+
+                        <div class="control-group" :class="[errors.has('info') ? 'has-error' : '']">
+                            <label for="info" :class="'required'">{{ __('delivery-point::app.info') }}</label>
+                            <textarea v-validate="'required'" class="control" id="info" name="info" data-vv-as="&quot;{{ __('delivery-point::app.info') }}&quot;">{{ old('info', $point->info) }}</textarea>
+                            <span class="control-error" v-if="errors.has('info')">@{{ errors.first('info') }}</span>
+                        </div>
+
+                    </div>
 
                 </div>
             </div>

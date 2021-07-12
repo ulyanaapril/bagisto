@@ -1,19 +1,19 @@
 @extends('admin::layouts.content')
 
 @section('page_title')
-    Магазини
+    {{ __('delivery-point::app.delivery-points') }}
 @stop
 
 @section('content')
     <div class="content">
         <div class="page-header">
             <div class="page-title">
-                <h1>Магазини</h1>
+                <h1> {{ __('delivery-point::app.delivery-points') }} </h1>
             </div>
 
             <div class="page-action">
-                <a href="{{ route('admin.catalog.categories.create') }}" class="btn btn-lg btn-primary">
-                    {{ __('admin::app.catalog.categories.add-title') }}
+                <a href="{{ route('admin.deliverypoint.create') }}" class="btn btn-lg btn-primary">
+                    {{ __('delivery-point::app.add-delivery-point') }}
                 </a>
             </div>
         </div>
@@ -47,37 +47,17 @@
 
                 var indexes = formData.indexes;
             }
-            
+
             if (indexes) {
-                $.ajax({
-                    type : 'POST',
-                    url : '{{route("admin.catalog.categories.product.count")}}',
-                    data : {
-                        _token: '{{csrf_token()}}',
-                        indexes: indexes
-                    },
-                    success:function(data) {
-                        $("input[type='checkbox']").attr('disabled', false);
-                        if (data.product_count > 0) {
-                            var message = "{{trans('ui::app.datagrid.massaction.delete-category-product')}}";
-                            if (type == 'delete') {
-                                doAction(e, message);
-                            } else {
-                                $('form').attr('onsubmit', 'return confirm("'+message+'")');
-                            }
-                        } else {
-                            var message = "{{ __('ui::app.datagrid.click_on_action') }}";
-                            if (type == 'delete') {
-                                doAction(e, message);
-                            } else {
-                                $('form').attr('onsubmit', 'return confirm("'+message+'")');
-                            }
-                        }
-                    }
-                });
-            } else {
                 $("input[type='checkbox']").attr('disabled', false);
+                var message = "{{ __('ui::app.datagrid.click_on_action') }}";
+                if (type == 'delete') {
+                    doAction(e, message);
+                } else {
+                    $('form').attr('onsubmit', 'return confirm("'+message+'")');
+                }
             }
+
         }
     </script>
 @endpush

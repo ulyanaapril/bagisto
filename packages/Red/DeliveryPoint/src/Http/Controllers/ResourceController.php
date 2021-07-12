@@ -59,6 +59,41 @@ class ResourceController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        $point = new StoresDepartments();
+
+        return view('delivery-point::create', compact('point'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function store()
+    {
+        $data = request()->all();
+
+        Validator::make($data, [
+            'address' => 'required',
+            'info' => 'required',
+            'active' => 'required',
+        ])->validateWithBag('post');
+
+
+        $point = StoresDepartments::create($data);
+
+        session()->flash('success', trans('admin::app.response.create-success', ['name' => 'DeliveryPoint']));
+
+        return redirect()->route('admin.deliverypoint.index');
+    }
+
+    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -66,9 +101,9 @@ class ResourceController extends Controller
      */
     public function edit($id)
     {
-        $category = StoresDepartments::findOrFail($id);
+        $point = StoresDepartments::findOrFail($id);
 
-        return view('delivery-point::edit', compact('category'));
+        return view('delivery-point::edit', compact('point'));
     }
 
     /**
@@ -96,7 +131,63 @@ class ResourceController extends Controller
                 'type' => 1,
             ]);
 
-        session()->flash('success', trans('admin::app.response.update-success', ['name' => 'Category']));
+        session()->flash('success', trans('admin::app.response.update-success', ['name' => 'DeliveryPoint']));
+
+        return redirect()->route('admin.deliverypoint.index');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $point = StoresDepartments::findOrFail($id);
+
+        try {
+
+            $point->delete();
+
+            session()->flash('success', trans('admin::app.response.delete-success', ['name' => 'DeliveryPoint']));
+
+            return response()->json(['message' => true], 200);
+        } catch (\Exception $e) {
+            session()->flash('error', trans('admin::app.response.delete-failed', ['name' => 'DeliveryPoint']));
+        }
+
+        return response()->json(['message' => false], 400);
+    }
+
+    /**
+     * Remove the specified resources from database.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function massDestroy()
+    {
+        $suppressFlash = true;
+        $pointIds = explode(',', request()->input('indexes'));
+
+        foreach ($pointIds as $pointId) {
+
+            $point = StoresDepartments::findOrFail($pointId);
+
+            if (isset($point)) {
+                try {
+                    $suppressFlash = true;
+                    $point->delete();
+
+                } catch (\Exception $e) {
+                    session()->flash('error', trans('admin::app.response.delete-failed', ['name' => 'DeliveryPoint']));
+                }
+            }
+        }
+
+        if (count($pointIds) != 1 || $suppressFlash == true) {
+            session()->flash('success', trans('admin::app.datagrid.mass-ops.delete-success', ['resource' => 'DeliveryPoint']));
+        }
 
         return redirect()->route('admin.deliverypoint.index');
     }

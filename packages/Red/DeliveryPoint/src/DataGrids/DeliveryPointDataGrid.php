@@ -75,7 +75,7 @@ class DeliveryPointDataGrid extends DataGrid
         $this->addAction([
             'title'        => trans('admin::app.datagrid.delete'),
             'method'       => 'POST',
-            'route'        => 'admin.catalog.categories.delete',
+            'route'        => 'admin.deliverypoint.delete',
             'confirm_text' => trans('ui::app.datagrid.massaction.delete', ['resource' => 'product']),
             'icon'         => 'icon trash-icon',
             'function'     => 'deleteFunction($event, "delete")'
@@ -84,7 +84,7 @@ class DeliveryPointDataGrid extends DataGrid
         $this->addMassAction([
             'type'   => 'delete',
             'label'  => trans('admin::app.datagrid.delete'),
-            'action' => route('admin.catalog.categories.massdelete'),
+            'action' => route('admin.deliverypoint.massdelete'),
             'method' => 'POST',
         ]);
     }
