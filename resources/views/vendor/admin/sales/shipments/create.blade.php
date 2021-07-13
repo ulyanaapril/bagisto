@@ -218,6 +218,29 @@
                                 @if ($order->shipping_method == 'ukrposhta')
                                     <order-shipping-ukrposhta></order-shipping-ukrposhta>
                                 @endif
+                                @if ($order->shipping_method == 'deliverypoint')
+                                    <?php
+                                        $inventorySource = null;
+                                        if (!empty($warehouse = $order->shipping_address->warehouse_ref)) {
+                                            $inventorySource = core()->getCurrentChannel()->inventory_sources()
+                                                ->where('id', $warehouse)
+                                                ->first();
+                                        }
+                                    ?>
+                                    <div class="secton-title">
+                                        <span>{{ __('admin::app.sales.shipments.delivery-to-shop') }}</span>
+                                    </div>
+                                    <div class="section-content">
+                                        <div class="row">
+                                            <span class="title">{{ __('admin::app.sales.shipments.address') }}</span>
+                                            <span class="value">
+                                                @if (!empty($inventorySource))
+                                                    <?= !empty($inventorySource->description) ? $inventorySource->description : $inventorySource->name ?></span>
+                                                @endif
+                                        </div>
+                                    </div>
+
+                                @endif
 
                             </div>
                         </div>

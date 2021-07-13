@@ -653,7 +653,7 @@ return [
             'summary' => 'Підсумок відвантаження',
             'carrier' => 'Перевізник',
             'tracking-number' => 'Номер відстеження',
-            'pozdrav' => 'Замовлення :order_id розміщено на :created_at',
+            'pozdrav' => 'Замовлення :order_id розміщено на :created_at'
         ],
 
         'refund' => [

@@ -188,6 +188,18 @@
                                                 @if ($order->shipping_method == 'np' || $order->shipping_method == 'justin')
                                                     {{ !empty($cityName) ? __('admin::app.sales.orders.city') . ': ' . $cityName : '' }}<br>
                                                     {{ !empty($warehouseName) ? $warehouseName : ''}}<br>
+                                                @elseIf ($order->shipping_method == 'deliverypoint')
+                                                    <?php
+                                                    $inventorySource = null;
+                                                    if (!empty($warehouse = $order->shipping_address->warehouse_ref)) {
+                                                        $inventorySource = core()->getCurrentChannel()->inventory_sources()
+                                                            ->where('id', $warehouse)
+                                                            ->first();
+                                                    }
+                                                    ?>
+                                                    @if (!empty($inventorySource))
+                                                            {{ __('admin::app.sales.shipments.delivery-to-shop') }} : {{ !empty($inventorySource->desscription) ? $inventorySource->description : $inventorySource->name }}<br>
+                                                    @endif
                                                 @else
                                                     @if(!empty($order->shipping_address->postcode) && !empty($order->shipping_address->city))
                                                         {{ __('admin::app.sales.orders.postcode') }} : {{ $order->shipping_address->postcode }}<br>
