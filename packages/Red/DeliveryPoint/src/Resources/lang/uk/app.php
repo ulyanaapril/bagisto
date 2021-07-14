@@ -3,5 +3,6 @@
 return [
     'address' => 'Адрес',
     'info' => 'Інформація',
-    'active' => 'Активний'
+    'active' => 'Активний',
+    'delivery-to-shop' => 'Магазини Red'
 ];

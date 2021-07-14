@@ -32,7 +32,7 @@ class Justin extends AbstractShipping
         $object->carrier = 'justin';
         $object->carrier_title = $this->getConfigData('title');
         $object->method = 'justin';
-        $object->method_title = trans('justin::app.justin');
+        $object->method_title = $this->getConfigData('title');
         $object->method_description = $this->getConfigData('description');
         $object->price = 0;
         $object->base_price = 0;
