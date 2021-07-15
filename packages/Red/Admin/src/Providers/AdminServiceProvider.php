@@ -18,6 +18,8 @@ class AdminServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'admin');
 
+        $this->app->register(EventServiceProvider::class);
+
     }
 
     /**
