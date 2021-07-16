@@ -4,7 +4,7 @@ namespace Webkul\Admin\Http\Controllers\Sales;
 
 use Illuminate\Support\Facades\Event;
 use Red\Justin\Models\JustinDepartments;
-use Red\NP\Http\NovaPoshta;
+use Red\NP\Models\NpDepartments;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Sales\Repositories\OrderRepository;
 use \Webkul\Sales\Repositories\OrderCommentRepository;
@@ -81,16 +81,15 @@ class OrderController extends Controller
 
             if (!empty($warehouseRef) && !empty($cityRef)) {
                 if ($order->shipping_method === 'np') {
-                    $np = new NovaPoshta();
-                    $cityName = $np->getCitiesName($cityRef);
-                    $warehouseName = $np->getWarehousesName($cityRef, $warehouseRef);
+                    $data = NpDepartments::getOrderShipping($cityRef, $warehouseRef);
+                    $cityName = $data['cityName'];
+                    $warehouseName = $data['warehouseName'];
 
                 }
                 if ($order->shipping_method === 'justin') {
-                    $justin = JustinDepartments::where(['uuid' => $warehouseRef])->first();
-                    if (!empty($justin))
-                        $cityName = $justin->city_name;
-                        $warehouseName = $justin->description . ' ' . $justin->address;
+                    $data = JustinDepartments::getOrderShipping($warehouseRef);
+                    $cityName = $data['cityName'];
+                    $warehouseName = $data['warehouseName'];
                 }
             }
 

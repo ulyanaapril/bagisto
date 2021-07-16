@@ -23,7 +23,7 @@ return [
 
     'home' => [
         'page-title' => config('app.name') . '- Дім',
-        'Featured-products' => 'Рекомендовані товари',
+        'featured-products' => 'Рекомендовані товари',
         'new-products' => 'Нові товари',
         'verify-email' => 'Підтвердьте свою електронну адресу',
         'resend-verify-email' => 'Повторно надіслати електронний лист для підтвердження'
@@ -320,7 +320,7 @@ return [
                     'shipping-address' => 'Адреса доставки',
                     'billing-address' => 'Адреса виставлення рахунку',
                     'shipping-method' => 'Спосіб доставки',
-                    'Payment-method' => 'Спосіб оплати',
+                    'payment-method' => 'Спосіб оплати',
                     'individual-invoice' => 'Рахунок-фактура #:invoice_id',
                     'individual-shipment' => 'Номер доставки #:shipment_id',
                     'print' => 'Друк',
@@ -432,7 +432,7 @@ return [
         'links' => 'Посилання',
         'name' => "Ім'я",
         'qty' => 'Кількість',
-        'Start-at' => 'Починаючи з',
+        'start-at' => 'Починаючи з',
         'customize-options' => 'Налаштувати параметри',
         'choose-selection' => 'Вибрати виділення',
         'your-customization' => 'Ваше налаштування',
@@ -627,7 +627,7 @@ return [
                 'billing-address' => 'Адреса виставлення рахунку',
                 'contact' => 'Контакт',
                 'shipping' => 'Спосіб доставки',
-                'Payment' => "Спосіб оплати",
+                'payment' => "Спосіб оплати",
                 'subtotal' => 'Проміжний підсумок',
                 'shipping-handling' => 'Доставка та обробка',
                 'tax' => 'податок',

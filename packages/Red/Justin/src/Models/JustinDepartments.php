@@ -16,4 +16,21 @@ class JustinDepartments extends Model
      */
     protected $table = 'justin_departments';
 
+    public static function getOrderShipping($warehouseRef) {
+        $cityName = '';
+        $warehouseName = '';
+
+        $justin = JustinDepartments::where(['uuid' => $warehouseRef])->first();
+        if (!empty($justin)) {
+            $cityName = $justin->city_name;
+            $warehouseName = $justin->description . ' ' . $justin->address;
+        }
+
+        return [
+            'cityName' => $cityName,
+            'warehouseName' => $warehouseName
+        ];
+
+    }
+
 }

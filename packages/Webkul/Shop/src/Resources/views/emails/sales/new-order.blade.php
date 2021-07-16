@@ -31,31 +31,42 @@
         <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 40px;">
             @if ($order->shipping_address)
                 <div style="line-height: 25px;">
-                    <div style="font-weight: bold;font-size: 16px;color: #242424;">
-                        {{ __('shop::app.mail.order.shipping-address') }}
-                    </div>
-
-                    <div>
-                        {{ $order->shipping_address->company_name ?? '' }}
-                    </div>
-
-                    <div>
-                        {{ $order->shipping_address->name }}
-                    </div>
-
-                    <div>
-                        {{ $order->shipping_address->address1 }}, {{ $order->shipping_address->state }}
-                    </div>
-
-                    <div>
-                        {{ core()->country_name($order->shipping_address->country) }} {{ $order->shipping_address->postcode }}
-                    </div>
-
-                    <div>---</div>
-
-                    <div style="margin-bottom: 40px;">
-                        {{ __('shop::app.mail.order.contact') }} : {{ $order->shipping_address->phone }}
-                    </div>
+                    @if ($order->shipping_method == 'np' || $order->shipping_method == 'justin')
+                        {{ !empty($cityName) ? __('admin::app.sales.orders.city') . ': ' . $cityName : '' }}<br>
+                        {{ !empty($warehouseName) ? $warehouseName : ''}}<br>
+                    @elseIf ($order->shipping_method == 'deliverypoint')
+                        <?php
+                        $inventorySource = null;
+                        if (!empty($warehouse = $order->shipping_address->warehouse_ref)) {
+                            $inventorySource = core()->getCurrentChannel()->inventory_sources()
+                                ->where('id', $warehouse)
+                                ->first();
+                        }
+                        ?>
+                        @if (!empty($inventorySource))
+                            {{ __('admin::app.sales.shipments.delivery-to-shop') }} : {{ !empty($inventorySource->desscription) ? $inventorySource->description : $inventorySource->name }}<br>
+                        @endif
+                    @else
+                        @if(!empty($order->shipping_address->postcode) && !empty($order->shipping_address->city))
+                            {{ __('admin::app.sales.orders.postcode') }} : {{ $order->shipping_address->postcode }}<br>
+                            {{ __('admin::app.sales.orders.city') }} : {{ $order->shipping_address->city }}<br>
+                        @endif
+                        @if (!empty($order->shipping_address->state))
+                            {{ $order->shipping_address->state }} {{ __('admin::app.sales.orders.state') }},
+                        @endif
+                        @if (!empty($order->shipping_address->district))
+                            {{$order->shipping_address->district}} {{ __('admin::app.sales.orders.district') }},
+                        @endif
+                        @if (!empty($order->shipping_address->street))
+                            {{ __('admin::app.sales.orders.st') }} {{ $order->shipping_address->street }}
+                        @endif
+                        @if (!empty($order->shipping_address->house))
+                            {{ __('admin::app.sales.orders.bld') }} {{ $order->shipping_address->house }}
+                        @endif
+                        @if(!empty($order->shipping_address->apartment))
+                            {{ __('admin::app.sales.orders.apt') }} {{ $order->shipping_address->apartment }}
+                        @endif
+                    @endif
 
                     <div style="font-size: 16px;color: #242424;">
                         {{ __('shop::app.mail.order.shipping') }}
@@ -67,50 +78,6 @@
                 </div>
             @endif
 
-            <div style="line-height: 25px;">
-                <div style="font-weight: bold;font-size: 16px;color: #242424;">
-                    {{ __('shop::app.mail.order.billing-address') }}
-                </div>
-
-                <div>
-                    {{ $order->billing_address->company_name ?? '' }}
-                </div>
-
-                <div>
-                    {{ $order->billing_address->name }}
-                </div>
-
-                <div>
-                    {{ $order->billing_address->address1 }}, {{ $order->billing_address->state }}
-                </div>
-
-                <div>
-                    {{ core()->country_name($order->billing_address->country) }} {{ $order->billing_address->postcode }}
-                </div>
-
-                <div>---</div>
-
-                <div style="margin-bottom: 40px;">
-                    {{ __('shop::app.mail.order.contact') }} : {{ $order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px; color: #242424;">
-                    {{ __('shop::app.mail.order.payment') }}
-                </div>
-
-                <div style="font-weight: bold; font-size: 16px; color: #242424; margin-bottom: 20px;">
-                    {{ core()->getConfigData('sales.paymentmethods.' . $order->payment->method . '.title') }}
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #242424;">
-                        <div>{{ $additionalDetails['title'] }}</div>
-                        <div>{{ $additionalDetails['value'] }}</div>
-                    </div>
-                @endif
-            </div>
         </div>
 
         <div class="section-content">

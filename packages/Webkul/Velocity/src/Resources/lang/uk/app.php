@@ -259,7 +259,7 @@ return [
         'more-infomation' => 'Додаткова інформація',
         'view-all-reviews' => 'Переглянути всі відгуки',
         'write-your-review' => 'Напишіть свій відгук',
-        'short-description' => 'Короткі описи',
+        'short-description' => 'Короткий опис',
         'recently-viewed' => 'Нещодавно переглянуті товари',
         'be-first-review' => 'Будьте першим, хто напише відгук',
     ],
