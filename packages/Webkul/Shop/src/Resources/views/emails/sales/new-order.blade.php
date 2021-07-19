@@ -32,8 +32,8 @@
             @if ($order->shipping_address)
                 <div style="line-height: 25px;">
                     @if ($order->shipping_method == 'np' || $order->shipping_method == 'justin')
-                        {{ !empty($cityName) ? __('admin::app.sales.orders.city') . ': ' . $cityName : '' }}<br>
-                        {{ !empty($warehouseName) ? $warehouseName : ''}}<br>
+                        {{ !empty($cityName) ? $cityName : '' }}<br>
+                        {{ !empty($warehouseName) ? $warehouseName : ''}}<br><br>
                     @elseIf ($order->shipping_method == 'deliverypoint')
                         <?php
                         $inventorySource = null;

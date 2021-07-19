@@ -8,7 +8,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Red\Justin\Models\JustinDepartments;
 use Red\NP\Models\NpDepartments;
-use Webkul\Sales\Models\OrderAddress;
+use Webkul\Checkout\Facades\Cart;
+use Webkul\Checkout\Models\CartAddress;
 
 class NewOrderNotification extends Mailable
 {
@@ -43,30 +44,36 @@ class NewOrderNotification extends Mailable
             $cityName = '';
             $warehouseName = '';
 
-            $customerAddress = OrderAddress::where([
-                'order_id' => $this->order->id,
-                'address_type' => OrderAddress::ADDRESS_TYPE_SHIPPING
-            ])->first();
+            $cart = Cart::getCart();
 
-            if (!empty($customerAddress)) {
-                $warehouseRef = $customerAddress->warehouse_ref;
-                $cityRef = $customerAddress->city_ref;
+            if (!empty($cart)) {
+                $customerAddress = CartAddress::where([
+                    'cart_id' => $cart->id,
+                    'address_type' => CartAddress::ADDRESS_TYPE_SHIPPING,
+                    'customer_id' => $cart->customer_id
+                ])->first();
 
-                if (!empty($warehouseRef) && !empty($cityRef)) {
-                    if ($this->order->shipping_method === 'np') {
-                        $data = NpDepartments::getOrderShipping($cityRef, $warehouseRef);
-                        $cityName = $data['cityName'];
-                        $warehouseName = $data['warehouseName'];
+                if (!empty($customerAddress)) {
+                    $warehouseRef = $customerAddress->warehouse_ref;
+                    $cityRef = $customerAddress->city_ref;
 
+                    if (!empty($warehouseRef) && !empty($cityRef)) {
+                        if ($this->order->shipping_method === 'np') {
+                            $data = NpDepartments::getOrderShipping($cityRef, $warehouseRef);
+                            $cityName = $data['cityName'];
+                            $warehouseName = $data['warehouseName'];
+
+                        }
+                        if ($this->order->shipping_method === 'justin') {
+                            $data = JustinDepartments::getOrderShipping($warehouseRef);
+                            $cityName = $data['cityName'];
+                            $warehouseName = $data['warehouseName'];
+                        }
                     }
-                    if ($this->order->shipping_method === 'justin') {
-                        $data = JustinDepartments::getOrderShipping($warehouseRef);
-                        $cityName = $data['cityName'];
-                        $warehouseName = $data['warehouseName'];
-                    }
+
                 }
-
             }
+
         } catch (\Exception $e) {
 //            var_dump($e->getMessage());die;
         }
