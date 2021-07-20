@@ -3,6 +3,7 @@
 namespace Red\Ukrposhta\Http\Controllers;
 
 use Illuminate\Support\Facades\Event;
+use Webkul\Checkout\Models\CartAddress;
 use Webkul\Sales\Models\OrderAddress;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Checkout\Facades\Cart;
@@ -229,6 +230,24 @@ class OnepageController extends Controller
                 'success'      => true,
                 'redirect_url' => $redirectUrl,
             ]);
+        }
+
+        $customerAddress = CartAddress::where([
+            'cart_id' => $cart->id,
+            'customer_id' => $cart->customer_id,
+            'address_type' => CartAddress::ADDRESS_TYPE_SHIPPING
+        ])->first();
+        if (!empty($customerAddress)) {
+            $customerAddress->fillable(array_merge($customerAddress->getFillable(),['district', 'street', 'house', 'apartment']));
+            $customerAddress->fill([
+                'postcode' => $postcode,
+                'state' => $state,
+                'city' => $city,
+                'district' => $district,
+                'street' => $street,
+                'house' => $house,
+                'apartment' => $apartment
+            ])->save();
         }
 
         $order = $this->orderRepository->create(Cart::prepareDataForOrder());

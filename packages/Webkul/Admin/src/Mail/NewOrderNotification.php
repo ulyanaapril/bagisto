@@ -40,10 +40,11 @@ class NewOrderNotification extends Mailable
      */
     public function build()
     {
-        try {
-            $cityName = '';
-            $warehouseName = '';
+        $customerAddress = null;
+        $cityName = '';
+        $warehouseName = '';
 
+        try {
             $cart = Cart::getCart();
 
             if (!empty($cart)) {
@@ -56,6 +57,15 @@ class NewOrderNotification extends Mailable
                 if (!empty($customerAddress)) {
                     $warehouseRef = $customerAddress->warehouse_ref;
                     $cityRef = $customerAddress->city_ref;
+
+                    if ($this->order->shipping_method === 'deliverypoint' && !empty($warehouseRef)) {
+                        $inventorySource = core()->getCurrentChannel()->inventory_sources()
+                            ->where('id', $warehouseRef)
+                            ->first();
+                        if (!empty($inventorySource)) {
+                            $warehouseName = !empty($inventorySource->desscription) ? $inventorySource->description : $inventorySource->name;
+                        }
+                    }
 
                     if (!empty($warehouseRef) && !empty($cityRef)) {
                         if ($this->order->shipping_method === 'np') {
@@ -80,6 +90,6 @@ class NewOrderNotification extends Mailable
         return $this->from(core()->getSenderEmailDetails()['email'], core()->getSenderEmailDetails()['name'])
                     ->to($this->order->customer_email, $this->order->customer_full_name)
                     ->subject(trans('shop::app.mail.order.subject'))
-                    ->view('shop::emails.sales.new-order', ['cityName' => $cityName, 'warehouseName' => $warehouseName]);
+                    ->view('shop::emails.sales.new-order', ['cityName' => $cityName, 'warehouseName' => $warehouseName, 'customerAddress' => $customerAddress]);
     }
 }

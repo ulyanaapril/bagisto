@@ -1,7 +1,11 @@
 @component('shop::emails.layouts.master')
     <div style="text-align: center;">
         <a href="{{ config('app.url') }}">
-            @include ('shop::emails.layouts.logo')
+            @if (core()->getConfigData('general.design.admin_logo.logo_image'))
+                <img src="{{ \Illuminate\Support\Facades\Storage::url(core()->getConfigData('general.design.admin_logo.logo_image')) }}" alt="{{ config('app.name') }}" style="height: 40px; width: 110px;"/>
+            @else
+                <img src="{{ asset('vendor/webkul/ui/assets/images/logo.png') }}" alt="{{ config('app.name') }}"/>
+            @endif
         </a>
     </div>
 
@@ -12,11 +16,11 @@
             </span> <br>
 
             <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-                {{ __('shop::app.mail.order.dear', ['customer_name' => $order->customer_full_name]) }},
+            {{ __('shop::app.mail.order.dear-admin', ['admin_name' => config('mail.from.name')]) }},
             </p>
 
             <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-                {!! __('shop::app.mail.order.greeting', [
+                {!! __('shop::app.mail.order.greeting-admin', [
                     'order_id' => '<a href="' . route('customer.orders.view', $order->id) . '" style="color: #0041FF; font-weight: bold;">#' . $order->increment_id . '</a>',
                     'created_at' => $order->created_at
                     ])
@@ -34,22 +38,35 @@
                     <div style="font-weight: bold;font-size: 16px;color: #242424;">
                         {{ __('shop::app.mail.order.shipping-address') }}
                     </div>
-
-                    <div>
-                        {{ $order->shipping_address->company_name ?? '' }}
-                    </div>
-
-                    <div>
-                        {{ $order->shipping_address->name }}
-                    </div>
-
-                    <div>
-                        {{ $order->shipping_address->address1 }}, {{ $order->shipping_address->state }}
-                    </div>
-
-                    <div>
-                        {{ core()->country_name($order->shipping_address->country) }} {{ $order->shipping_address->postcode }}
-                    </div>
+                    @if ($order->shipping_method == 'np' || $order->shipping_method == 'justin')
+                        {{ !empty($cityName) ? $cityName : '' }}<br>
+                        {{ !empty($warehouseName) ? $warehouseName : ''}}<br>
+                    @elseIf ($order->shipping_method == 'deliverypoint')
+                        {{ __('admin::app.sales.shipments.delivery-to-shop') }} : {{ !empty($warehouseName) ? $warehouseName : '' }}<br>
+                    @else
+                        @if (!empty($customerAddress))
+                            @if(!empty($customerAddress->postcode) && !empty($customerAddress->city))
+                                {{ __('admin::app.sales.orders.postcode') }} : {{ $customerAddress->postcode }}<br>
+                                {{ __('admin::app.sales.orders.city') }} : {{ $customerAddress->city }}<br>
+                            @endif
+                            @if (!empty($customerAddress->state))
+                                {{ $customerAddress->state }} {{ __('admin::app.sales.orders.state') }},
+                            @endif
+                            @if (!empty($customerAddress->district))
+                                {{$customerAddress->district}} {{ __('admin::app.sales.orders.district') }},
+                            @endif
+                            @if (!empty($customerAddress->street))
+                                {{ __('admin::app.sales.orders.st') }} {{ $customerAddress->street }}
+                            @endif
+                            @if (!empty($customerAddress->house))
+                                {{ __('admin::app.sales.orders.bld') }} {{ $customerAddress->house }}
+                            @endif
+                            @if(!empty($customerAddress->apartment))
+                                {{ __('admin::app.sales.orders.apt') }} {{ $customerAddress->apartment }}
+                            @endif
+                        @endif
+                    @endif
+                    <br>
 
                     <div>---</div>
 
@@ -67,50 +84,6 @@
                 </div>
             @endif
 
-            <div style="line-height: 25px;">
-                <div style="font-weight: bold;font-size: 16px;color: #242424;">
-                    {{ __('shop::app.mail.order.billing-address') }}
-                </div>
-
-                <div>
-                    {{ $order->billing_address->company_name ?? '' }}
-                </div>
-
-                <div>
-                    {{ $order->billing_address->name }}
-                </div>
-
-                <div>
-                    {{ $order->billing_address->address1 }}, {{ $order->billing_address->state }}
-                </div>
-
-                <div>
-                    {{ core()->country_name($order->billing_address->country) }} {{ $order->billing_address->postcode }}
-                </div>
-
-                <div>---</div>
-
-                <div style="margin-bottom: 40px;">
-                    {{ __('shop::app.mail.order.contact') }} : {{ $order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px; color: #242424;">
-                    {{ __('shop::app.mail.order.payment') }}
-                </div>
-
-                <div style="font-weight: bold; font-size: 16px; color: #242424; margin-bottom: 20px;">
-                    {{ core()->getConfigData('sales.paymentmethods.' . $order->payment->method . '.title') }}
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #242424;">
-                        <div>{{ $additionalDetails['title'] }}</div>
-                        <div>{{ $additionalDetails['value'] }}</div>
-                    </div>
-                @endif
-            </div>
         </div>
 
         <div class="section-content">
@@ -129,7 +102,9 @@
                     <tbody>
                         @foreach ($order->items as $item)
                             <tr>
-                                <td data-value="{{ __('shop::app.customer.account.order.view.SKU') }}" style="text-align: left;padding: 8px">{{ $item->getTypeInstance()->getOrderedItem($item)->sku }}</td>
+                                <td data-value="{{ __('shop::app.customer.account.order.view.SKU') }}" style="text-align: left;padding: 8px">
+                                    {{ $item->getTypeInstance()->getOrderedItem($item)->sku }}
+                                </td>
 
                                 <td data-value="{{ __('shop::app.customer.account.order.view.product-name') }}" style="text-align: left;padding: 8px">
                                     {{ $item->name }}
@@ -145,10 +120,13 @@
                                     @endif
                                 </td>
 
-                                <td data-value="{{ __('shop::app.customer.account.order.view.price') }}" style="text-align: left;padding: 8px">{{ core()->formatPrice($item->price, $order->order_currency_code) }}
+                                <td data-value="{{ __('shop::app.customer.account.order.view.price') }}" style="text-align: left;padding: 8px">
+                                    {{ core()->formatPrice($item->price, $order->order_currency_code) }}
                                 </td>
 
-                                <td data-value="{{ __('shop::app.customer.account.order.view.qty') }}" style="text-align: left;padding: 8px">{{ $item->qty_ordered }}</td>
+                                <td data-value="{{ __('shop::app.customer.account.order.view.qty') }}" style="text-align: left;padding: 8px">
+                                    {{ $item->qty_ordered }}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -160,33 +138,31 @@
             <div>
                 <span>{{ __('shop::app.mail.order.subtotal') }}</span>
                 <span style="float: right;">
-                    {{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}
+                    {{ core()->formatBasePrice($order->base_sub_total) }}
                 </span>
             </div>
 
-            @if ($order->shipping_address)
-                <div>
-                    <span>{{ __('shop::app.mail.order.shipping-handling') }}</span>
-                    <span style="float: right;">
-                        {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
-                    </span>
-                </div>
-            @endif
+            <div>
+                <span>{{ __('shop::app.mail.order.shipping-handling') }}</span>
+                <span style="float: right;">
+                    {{ core()->formatBasePrice($order->base_shipping_amount) }}
+                </span>
+            </div>
 
-            @foreach (Webkul\Tax\Helpers\Tax::getTaxRatesWithAmount($order, false) as $taxRate => $taxAmount )
-                <div>
-                    <span id="taxrate-{{ core()->taxRateAsIdentifier($taxRate) }}">{{ __('shop::app.mail.order.tax') }} {{ $taxRate }} %</span>
-                    <span id="taxamount-{{ core()->taxRateAsIdentifier($taxRate) }}" style="float: right;">
-                        {{ core()->formatPrice($taxAmount, $order->order_currency_code) }}
-                    </span>
-                </div>
+            @foreach (Webkul\Tax\Helpers\Tax::getTaxRatesWithAmount($order, true) as $taxRate => $baseTaxAmount )
+            <div>
+                <span id="taxrate-{{ core()->taxRateAsIdentifier($taxRate) }}">{{ __('shop::app.mail.order.tax') }} {{ $taxRate }} %</span>
+                <span id="basetaxamount-{{ core()->taxRateAsIdentifier($taxRate) }}" style="float: right;">
+                    {{ core()->formatBasePrice($baseTaxAmount) }}
+                </span>
+            </div>
             @endforeach
 
             @if ($order->discount_amount > 0)
                 <div>
                     <span>{{ __('shop::app.mail.order.discount') }}</span>
                     <span style="float: right;">
-                        {{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}
+                        {{ core()->formatBasePrice($order->base_discount_amount) }}
                     </span>
                 </div>
             @endif
@@ -194,20 +170,16 @@
             <div style="font-weight: bold">
                 <span>{{ __('shop::app.mail.order.grand-total') }}</span>
                 <span style="float: right;">
-                    {{ core()->formatPrice($order->grand_total, $order->order_currency_code) }}
+                    {{ core()->formatBasePrice($order->base_grand_total) }}
                 </span>
             </div>
         </div>
 
-        <div style="margin-top: 65px;font-size: 16px;color: #5E5E5E;line-height: 24px;display: inline-block">
-            <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
-                {{ __('shop::app.mail.order.final-summary') }}
-            </p>
-
+        <div style="width: 100%;margin-top: 65px;font-size: 16px;color: #5E5E5E;line-height: 24px;display: inline-block">
             <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
                 {!!
                     __('shop::app.mail.order.help', [
-                        'support_email' => '<a style="color:#0041FF" href="mailto:' . config('mail.from.address') . '">' . config('mail.from.address'). '</a>'
+                        'support_email' => '<a style="color:#0041FF" href="mailto:' . config('mail.admin.address') . '">' . config('mail.admin.address') . '</a>'
                         ])
                 !!}
             </p>
