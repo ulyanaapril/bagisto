@@ -7,6 +7,11 @@ use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
+//    public $bindings = [
+//            \Webkul\Admin\Http\Controllers\Sales\OrderController::class =>
+//                \Red\Admin\Http\Controllers\OrderController::class
+//        // other bindings
+//    ];
     /**
      * Bootstrap any application services.
      *

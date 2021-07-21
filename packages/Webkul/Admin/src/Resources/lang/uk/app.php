@@ -393,6 +393,7 @@ return [
             'order-status-pending-payment' => 'Очікує на оплату',
             'order-status-processing' => 'Обробка',
             'order-status-success' => 'Завершено',
+            'order-status-assembled' => 'Відвантажений',
             'channel' => 'Канал',
             'customer-name' => "Ім'я клієнта",
             'email' => 'Електронна пошта',
