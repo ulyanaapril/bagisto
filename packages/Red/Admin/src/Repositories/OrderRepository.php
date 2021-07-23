@@ -55,7 +55,7 @@ class OrderRepository extends Repository
      */
     public function model()
     {
-        return 'Red\Admin\Contracts\Order';
+        return 'Red\Admin\Models\Order';
     }
 
     /**

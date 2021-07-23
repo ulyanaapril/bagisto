@@ -22,7 +22,7 @@
         </div>
 
         <div class="page-content">
-            @inject('orderGrid', 'Webkul\Admin\DataGrids\OrderDataGrid')
+            @inject('orderGrid', 'Red\Admin\DataGrids\OrderDataGrid')
             {!! $orderGrid->render() !!}
         </div>
     </div>

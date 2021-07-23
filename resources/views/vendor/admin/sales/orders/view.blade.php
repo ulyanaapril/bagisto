@@ -88,7 +88,7 @@
                                             </span>
 
                                             <span class="value">
-{{--                                                {{ $order->status_label }}--}}
+                                                {{ $order->status_label }}
                                             </span>
                                         </div>
 
