@@ -668,7 +668,14 @@ class ResourceController extends Controller
                     $order = $this->orderRepository->find($item['id']);
                     if (!empty($order)) {
                         if ($item['status'] === 'assembled') {
-                            $invoice = ['invoice']['items']['9'] = 1;
+//                            $invoice = ['invoice']['items']['9'] = 1;
+                            $items = $order->items->toArray();
+//                            $items = array_column($items, 'qty_ordered', 'id');
+                            return response()->json([
+                                    'status' => 200,
+                                    'items' => $items
+                                ]);
+
                             $order->status = $item['status'];
                             if (!$order->save()) {
                                 throw new \Exception('Save error');
