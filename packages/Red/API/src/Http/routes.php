@@ -51,5 +51,10 @@ Route::group(['prefix' => 'api-1c'], function ($router) {
             'authorization_required' => true
         ]);
 
+        Route::post('import/update-order', 'ResourceController@updateOrder')->defaults('_config', [
+            'repository' => 'Webkul\Product\Repositories\ProductRepository',
+            'authorization_required' => true
+        ]);
+
     });
 });

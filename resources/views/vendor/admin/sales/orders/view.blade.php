@@ -31,7 +31,7 @@
                     </a>
                 @endif
 
-                @if ($order->canInvoice())
+                @if ($order->canInvoice() && ($order->status == 'processing' || $order->status == 'assembled' ))
                     <a href="{{ route('admin.sales.invoices.create', $order->id) }}" class="btn btn-lg btn-primary">
                         {{ __('admin::app.sales.orders.invoice-btn-title') }}
                     </a>
@@ -43,7 +43,7 @@
                     </a>
                 @endif
 
-                @if ($order->canShip())
+                @if ($order->canShip() && ($order->status == 'processing' || $order->status == 'assembled' ))
                     <a href="{{ route('admin.sales.shipments.create', $order->id) }}" class="btn btn-lg btn-primary">
                         {{ __('admin::app.sales.orders.shipment-btn-title') }}
                     </a>
@@ -54,6 +54,15 @@
         </div>
 
         <div class="page-content">
+
+            @if ($order->canShip() && ($order->status !== 'processing' && $order->status !== 'assembled'))
+                <div id="alert-container">
+                    <div class="alert alert-info alert-dismissible">
+                        <a href="#" class="close" data-dismiss="alert"></a>
+                        {{ __('admin::app.sales.orders.cannot-be-issued') }}
+                    </div>
+                </div>
+            @endif
 
             <tabs>
                 {!! view_render_event('sales.order.tabs.before', ['order' => $order]) !!}
@@ -642,4 +651,5 @@
         </div>
 
     </div>
+    <link rel="stylesheet" href="http://127.0.0.1:8000/themes/velocity/assets/css/bootstrap.min.css">
 @stop

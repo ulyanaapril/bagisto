@@ -345,6 +345,7 @@ return [
             'invoices' => 'Invoices',
             'shipments' => 'Shipments',
             'order-and-account' => 'Order and Account',
+            'cannot-be-issued' => 'Cannot be issued',
             'order-info' => 'Order Information',
             'order-date' => 'Order Date',
             'order-status' => 'Order Status',

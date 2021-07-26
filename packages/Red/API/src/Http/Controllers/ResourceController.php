@@ -11,6 +11,7 @@ use Red\Admin\Models\AttributeOption;
 use Red\Admin\Models\Category;
 use Red\Admin\Repositories\AttributeOptionRepository;
 use Red\Admin\Repositories\CategoryRepository;
+use Red\Admin\Repositories\OrderRepository;
 use Throwable;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Attribute\Repositories\AttributeRepository;
@@ -80,12 +81,18 @@ class ResourceController extends Controller
     protected $inventorySourceRepository;
 
     /**
+     * @var
+     */
+    protected $orderRepository;
+
+    /**
      * Create a new controller instance.
      *
      * @param CategoryRepository $categoryRepository
      * @param AttributeRepository $attribute
      * @param AttributeOptionRepository $attributeOption
      * @param GoogleTranslation $trans
+     * @param OrderRepository $orderRepository
      * @param InventorySourceRepository $inventorySourceRepository
      */
     public function __construct(
@@ -93,6 +100,7 @@ class ResourceController extends Controller
         AttributeRepository $attribute,
         AttributeOptionRepository $attributeOption,
         GoogleTranslation $trans,
+        OrderRepository $orderRepository,
         InventorySourceRepository $inventorySourceRepository
     )
     {
@@ -103,6 +111,7 @@ class ResourceController extends Controller
         $this->categoryRepository = $categoryRepository;
         $this->attributeRepository = $attribute;
         $this->attributeOptionRepository = $attributeOption;
+        $this->orderRepository = $orderRepository;
         $this->trans = $trans;
         $this->inventorySourceRepository = $inventorySourceRepository;
 
@@ -644,5 +653,43 @@ class ResourceController extends Controller
         return response()->json([
             'message' => 'Item removed successfully.',
         ]);
+    }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateOrder()
+    {
+        $orders = json_decode(request()->getContent(), true);
+
+        try {
+            if (!empty($orders)) {
+                foreach ($orders as $item) {
+                    $order = $this->orderRepository->find($item['id']);
+                    if (!empty($order)) {
+                        if ($item['status'] === 'assembled') {
+                            $invoice = ['invoice']['items']['9'] = 1;
+                            $order->status = $item['status'];
+                            if (!$order->save()) {
+                                throw new \Exception('Save error');
+                            }
+                        } else {
+                            throw new \Exception('Unknown status');
+                        }
+
+                    }
+                }
+                return response()->json([
+                    'status' => 200,
+                    'message' => 'Orders successfully updated',
+                ], 200);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
