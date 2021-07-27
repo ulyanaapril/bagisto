@@ -10,8 +10,6 @@ class AppServiceProvider extends ServiceProvider
     public $bindings = [
         \Webkul\Admin\Http\Controllers\Sales\OrderController::class =>
             \Red\Admin\Http\Controllers\OrderController::class,
-        \Webkul\Sales\Models\Order::class =>
-            \Red\Admin\Models\Order::class
     ];
     /**
      * Bootstrap any application services.
@@ -21,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+
+        $this->app->concord->registerModel(
+            \Webkul\Sales\Contracts\Order::class, \Red\Admin\Models\Order::class
+        );
     }
 
     /**

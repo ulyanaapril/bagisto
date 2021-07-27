@@ -18,6 +18,7 @@ use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Core\Contracts\Validations\Slug;
 use Webkul\Inventory\Repositories\InventorySourceRepository;
 use Webkul\Product\Models\Product;
+use Webkul\Sales\Repositories\InvoiceRepository;
 
 class ResourceController extends Controller
 {
@@ -63,6 +64,11 @@ class ResourceController extends Controller
     protected $attributeOptionRepository;
 
     /**
+     * @var InvoiceRepository
+     */
+    protected $invoiceRepository;
+
+    /**
      * @var array
      */
     protected $permutation = [
@@ -94,6 +100,7 @@ class ResourceController extends Controller
      * @param GoogleTranslation $trans
      * @param OrderRepository $orderRepository
      * @param InventorySourceRepository $inventorySourceRepository
+     * @param InvoiceRepository $invoiceRepository
      */
     public function __construct(
         CategoryRepository $categoryRepository,
@@ -101,7 +108,8 @@ class ResourceController extends Controller
         AttributeOptionRepository $attributeOption,
         GoogleTranslation $trans,
         OrderRepository $orderRepository,
-        InventorySourceRepository $inventorySourceRepository
+        InventorySourceRepository $inventorySourceRepository,
+        InvoiceRepository $invoiceRepository
     )
     {
         $this->guard = request()->has('token') ? 'admin-api' : 'admin';
@@ -114,6 +122,7 @@ class ResourceController extends Controller
         $this->orderRepository = $orderRepository;
         $this->trans = $trans;
         $this->inventorySourceRepository = $inventorySourceRepository;
+        $this->invoiceRepository = $invoiceRepository;
 
         if (isset($this->_config['authorization_required']) && $this->_config['authorization_required']) {
 
@@ -665,16 +674,40 @@ class ResourceController extends Controller
         try {
             if (!empty($orders)) {
                 foreach ($orders as $item) {
+                    $validator = Validator::make($item, [
+                        'id' => 'required',
+                        'status' => 'required'
+                    ]);
+
+                    if ($validator->fails()) {
+                        return response()->json([
+                            'message' => 'Error',
+                            'data' => $validator->errors(),
+                        ], 500);
+                    }
+
                     $order = $this->orderRepository->find($item['id']);
                     if (!empty($order)) {
                         if ($item['status'] === 'assembled') {
-//                            $invoice = ['invoice']['items']['9'] = 1;
                             $items = $order->items->toArray();
-//                            $items = array_column($items, 'qty_ordered', 'id');
-                            return response()->json([
-                                    'status' => 200,
-                                    'items' => $items
-                                ]);
+                            if (!empty($items)) {
+                                $items = array_column($items, 'qty_ordered', 'id');
+                                $invoices['invoice']['items'] = $items;
+
+                                $haveProductToInvoice = false;
+
+                                foreach ($invoices['invoice']['items'] as $itemId => $qty) {
+                                    if ($qty) {
+                                        $haveProductToInvoice = true;
+                                        break;
+                                    }
+                                }
+
+                                if ($order->canInvoice() && $haveProductToInvoice) {
+                                    $this->invoiceRepository->create(array_merge($invoices, ['order_id' => $order->id]));
+                                }
+
+                            }
 
                             $order->status = $item['status'];
                             if (!$order->save()) {
