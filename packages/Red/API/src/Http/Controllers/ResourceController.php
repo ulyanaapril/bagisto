@@ -540,6 +540,51 @@ class ResourceController extends Controller
     }
 
     /**
+     * Create sizes
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storeSizes() {
+        try {
+            $data = json_decode(request()->getContent(), true);
+            if (!empty($data)) {
+                $attributeSize = Attribute::where(['code' => 'size'])->first();
+                if (empty($attributeSize)) {
+                    $attributeSize = $this->attributeRepository->create(['code' => 'size', 'admin_name' => 'Size', 'type' => 'select', 'is_configurable' => 1]);
+                }
+
+                foreach ($data as $size) {
+                    $option = AttributeOption::where(['id_1c' => $size['id_1c'], 'attribute_id' => $attributeSize->id])->first();
+                    if (empty($option)) {
+                        $this->attributeOptionRepository->create([
+                            'attribute_id' => $attributeSize->id,
+                            'admin_name' => $size['admin_name'],
+                            'id_1c' => $size['id_1c'],
+                            'sort_order' => 1,
+                            'en' => ['label' => $size['admin_name']],
+                            'uk' => ['label' => $size['admin_name']],
+                            'ru' => ['label' => $size['admin_name']],
+                        ]);
+                    }
+                }
+            } else {
+                throw new \Exception('Empty data');
+            }
+
+            return response()->json([
+                'status' => 200,
+                'message' => 'Sizes created successfully',
+            ], 200);
+
+        } catch (Throwable $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
+    }
+
+    /**
      * @return \Illuminate\Http\JsonResponse
      */
     public function getSizes() {

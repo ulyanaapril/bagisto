@@ -26,32 +26,37 @@ Route::group(['prefix' => 'api-1c'], function ($router) {
             'authorization_required' => true
         ]);
 
-        Route::post('products/get-categories', 'ResourceController@getCategories')->defaults('_config', [
+        Route::get('products/get-categories', 'ResourceController@getCategories')->defaults('_config', [
             'repository' => 'Webkul\Product\Repositories\ProductRepository',
             'authorization_required' => true
         ]);
 
-        Route::post('products/get-sizes', 'ResourceController@getSizes')->defaults('_config', [
+        Route::get('products/get-sizes', 'ResourceController@getSizes')->defaults('_config', [
             'repository' => 'Webkul\Product\Repositories\ProductRepository',
             'authorization_required' => true
         ]);
 
-        Route::post('products/get-colors', 'ResourceController@getColors')->defaults('_config', [
+        Route::get('products/get-colors', 'ResourceController@getColors')->defaults('_config', [
             'repository' => 'Webkul\Product\Repositories\ProductRepository',
             'authorization_required' => true
         ]);
 
-        Route::post('products/get-brands', 'ResourceController@getBrands')->defaults('_config', [
+        Route::get('products/get-brands', 'ResourceController@getBrands')->defaults('_config', [
             'repository' => 'Webkul\Product\Repositories\ProductRepository',
             'authorization_required' => true
         ]);
 
-        Route::post('products/get-seasons', 'ResourceController@getSeasons')->defaults('_config', [
+        Route::get('products/get-seasons', 'ResourceController@getSeasons')->defaults('_config', [
             'repository' => 'Webkul\Product\Repositories\ProductRepository',
             'authorization_required' => true
         ]);
 
         Route::post('import/update-order', 'ResourceController@updateOrder')->defaults('_config', [
+            'repository' => 'Webkul\Product\Repositories\ProductRepository',
+            'authorization_required' => true
+        ]);
+
+        Route::post('import/store-sizes', 'ResourceController@storeSizes')->defaults('_config', [
             'repository' => 'Webkul\Product\Repositories\ProductRepository',
             'authorization_required' => true
         ]);
