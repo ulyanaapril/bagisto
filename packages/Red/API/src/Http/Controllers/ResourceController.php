@@ -546,13 +546,13 @@ class ResourceController extends Controller
     public function storeSizes() {
         try {
             $data = json_decode(request()->getContent(), true);
-            if (!empty($data)) {
+            if (!empty($data['sizes'])) {
                 $attributeSize = Attribute::where(['code' => 'size'])->first();
                 if (empty($attributeSize)) {
                     $attributeSize = $this->attributeRepository->create(['code' => 'size', 'admin_name' => 'Size', 'type' => 'select', 'is_configurable' => 1]);
                 }
 
-                foreach ($data as $size) {
+                foreach ($data['sizes'] as $size) {
                     $this->attributeOptionRepository->create([
                         'attribute_id' => $attributeSize->id,
                         'admin_name' => $size['admin_name'],
