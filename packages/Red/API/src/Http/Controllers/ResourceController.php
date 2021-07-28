@@ -553,18 +553,14 @@ class ResourceController extends Controller
                 }
 
                 foreach ($data as $size) {
-                    $option = AttributeOption::where(['id_1c' => $size['id_1c'], 'attribute_id' => $attributeSize->id])->first();
-                    if (empty($option)) {
-                        $this->attributeOptionRepository->create([
-                            'attribute_id' => $attributeSize->id,
-                            'admin_name' => $size['admin_name'],
-                            'id_1c' => $size['id_1c'],
-                            'sort_order' => 1,
-                            'en' => ['label' => $size['admin_name']],
-                            'uk' => ['label' => $size['admin_name']],
-                            'ru' => ['label' => $size['admin_name']],
-                        ]);
-                    }
+                    $this->attributeOptionRepository->create([
+                        'attribute_id' => $attributeSize->id,
+                        'admin_name' => $size['admin_name'],
+                        'sort_order' => $size['sort_order'],
+                        'en' => ['label' => $size['admin_name']],
+                        'uk' => ['label' => $size['admin_name']],
+                        'ru' => ['label' => $size['admin_name']],
+                    ]);
                 }
             } else {
                 throw new \Exception('Empty data');
