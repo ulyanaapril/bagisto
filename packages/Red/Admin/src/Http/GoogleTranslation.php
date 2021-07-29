@@ -15,7 +15,7 @@ class GoogleTranslation
         $this->trans = new GoogleTranslate($GoogleTranslateClient);
     }
 
-    public function justTranslate($text) {
-        return $this->trans->justTranslate($text, 'ru');
+    public function justTranslate($text, $to = 'ru') {
+        return $this->trans->justTranslate($text, $to);
     }
 }

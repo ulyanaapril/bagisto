@@ -10,6 +10,8 @@ class AppServiceProvider extends ServiceProvider
     public $bindings = [
         \Webkul\Admin\Http\Controllers\Sales\OrderController::class =>
             \Red\Admin\Http\Controllers\OrderController::class,
+        \Webkul\Product\Http\Controllers\ProductController::class =>
+            \Red\Admin\Http\Controllers\ProductController::class
     ];
     /**
      * Bootstrap any application services.
