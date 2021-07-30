@@ -224,17 +224,6 @@ class ProductController extends Controller
 
         $productAttributes = $this->productRepository->findOrFail($id);
 
-        $attributeName = Attribute::where(['code' => 'name'])->first();
-        $attributeComposition = Attribute::where(['code' => 'composition'])->first();
-        $attributeDescription = Attribute::where(['code' => 'description'])->first();
-        $attributeShortDescription = Attribute::where(['code' => 'short_description'])->first();
-        $attributeMetaTitle = Attribute::where(['code' => 'meta_title'])->first();
-        $attributeMetaKeywords = Attribute::where(['code' => 'meta_keywords'])->first();
-        $attributeMetaDescription = Attribute::where(['code' => 'meta_description'])->first();
-
-        $allTranslations = ProductAttributeValue::where(['product_id' => $id])->get()->toArray();
-        $allTranslations = $this->groupBy($allTranslations, 'locale');
-
         foreach ($productAttributes->attribute_family->attribute_groups as $attributeGroup) {
             $customAttributes = $productAttributes->getEditableAttributes($attributeGroup);
 
@@ -258,62 +247,39 @@ class ProductController extends Controller
         $product = $this->productRepository->update($data, $id);
 
         try {
-            $originLang = $data['locale'];
-            foreach(core()->getAllLocales() as $locale) {
-                if ($locale->code !== $originLang) {
+
+            $originData = $data;
+            $translatableAttributes = [
+                'name',
+                'composition',
+                'description',
+                'short_description',
+                'meta_title',
+                'meta_keywords',
+                'meta_description'
+            ];
+            $allTranslations = ProductAttributeValue::where(['product_id' => $id])->get()->toArray();
+            $allTranslations = $this->groupBy($allTranslations, 'locale');
+
+            foreach (core()->getAllLocales() as $locale) {
+                if ($locale->code !== $originData['locale']) {
                     $data['locale'] = $locale->code;
-                    $key = array_search($attributeName->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-                    if (empty($allTranslations[$locale->code][$key]['text_value'])) {
-                        $data['name'] = $this->trans->justTranslate($data['name'], $locale->code);
-                    } else {
-                        $data['name'] = $allTranslations[$locale->code][$key]['text_value'];
-                    }
-                    if (!empty($attributeComposition)) {
-                        $key = array_search($attributeComposition->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-                        if (!empty($data['composition']) && empty($allTranslations[$locale->code][$key]['text_value'])) {
-                            $data['composition'] = $this->trans->justTranslate($data['composition'], $locale->code);
+                    foreach ($data as $keyField => $field) {
+                        if (in_array($keyField, $translatableAttributes)) {
+                            if (!empty($allTranslations[$locale->code])) {
+                                $attribute = Attribute::where(['code' => $keyField])->first();
+                                $key = array_search($attribute->id, array_column($allTranslations[$locale->code], 'attribute_id'));
+                                if (empty($allTranslations[$locale->code][$key]['text_value'])) {
+                                    $data[$keyField] = $this->trans->justTranslate($originData[$keyField], $locale->code);
+                                } else {
+                                    $data[$keyField] = $allTranslations[$locale->code][$key]['text_value'];
+                                }
+                            } else {
+                                $data[$keyField] = $this->trans->justTranslate($originData[$keyField], $locale->code);
+                            }
+
                         }
-                    } else {
-                        $data['composition'] = $allTranslations[$locale->code][$key]['text_value'];
                     }
-                    $key = array_search($attributeDescription->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-                    if (empty($allTranslations[$locale->code][$key]['text_value'])) {
-                        $data['description'] = $this->trans->justTranslate($data['description'], $locale->code);
-                    } else {
-                        $data['description'] = $allTranslations[$locale->code][$key]['text_value'];
-                    }
-                    $key = array_search($attributeShortDescription->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-                    if (empty($allTranslations[$locale->code][$key]['text_value'])) {
-                        $data['short_description'] = $this->trans->justTranslate($data['short_description'], $locale->code);
-                    } else {
-                        $data['short_description'] = $allTranslations[$locale->code][$key]['text_value'];
-                    }
-                    $key = array_search($attributeMetaTitle->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-                    if (empty($allTranslations[$locale->code][$key]['text_value'])) {
-                        $data['meta_title'] = $this->trans->justTranslate($data['meta_title'], $locale->code);
-                    } else {
-                        $data['meta_title'] = $allTranslations[$locale->code][$key]['text_value'];
-                    }
-                    $key = array_search($attributeMetaKeywords->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-                    if (empty($allTranslations[$locale->code][$key]['text_value'])) {
-                        $data['meta_keywords'] = $this->trans->justTranslate($data['meta_keywords'], $locale->code);
-                    } else {
-                        $data['meta_keywords'] = $allTranslations[$locale->code][$key]['text_value'];
-                    }
-                    $key = array_search($attributeMetaDescription->id, array_column($allTranslations[$locale->code], 'attribute_id'));
-
-                    if ($locale->code == 'en') {
-                        var_dump($data['meta_description']);die;
-                        var_dump($this->trans->justTranslate($data['meta_description'], $locale->code));
-                        var_dump($allTranslations[$locale->code][$key]['text_value']);die;
-                    }
-                    if (empty($allTranslations[$locale->code][$key]['text_value'])) {
-                        $data['meta_description'] = $this->trans->justTranslate($data['meta_description'], $locale->code);
-                    } else {
-                        $data['meta_description'] = $allTranslations[$locale->code][$key]['text_value'];
-                    }
-
-
 
                     $product = $this->productRepository->update($data, $id);
                 }
