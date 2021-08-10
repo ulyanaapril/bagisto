@@ -46,13 +46,13 @@
 
                     <div
                         @mouseout="toggleSidebar(id, $event, 'mouseout')"
-                        @mouseover="remainBar(`sidebar-level-${sidebarLevel+categoryIndex}`)"
-                        :class="`sub-categories sub-category-${sidebarLevel+categoryIndex} cursor-default sub-categories-2`">
+                        @mouseover="remainBar(`sidebar-level-${sidebarLevel+categoryIndex}-2`)"
+                        :class="`sub-categories sub-category-${sidebarLevel+categoryIndex}-2 cursor-default sub-categories-2`">
 
                         <nav
                             class="sidebar"
-                            :id="`sidebar-level-${sidebarLevel+categoryIndex}`"
-                            @mouseover="remainBar(`sidebar-level-${sidebarLevel+categoryIndex}`)">
+                            :id="`sidebar-level-${sidebarLevel+categoryIndex}-2`"
+                            @mouseover="remainBar(`sidebar-level-${sidebarLevel+categoryIndex}-2`)">
 
                             <ul type="none">
                                 <li
@@ -69,7 +69,8 @@
 
                                         <div
                                             class="category-icon"
-                                        >
+                                            @mouseout="toggleSidebar(id, $event, 'mouseout')"
+                                            @mouseover="toggleSidebar(id, $event, 'mouseover')">
 
                                             <img
                                                 v-if="subCategory.category_icon_path"
@@ -79,13 +80,12 @@
 
                                         <i
                                                 class="rango-arrow-right pr15 float-right"
-                                                @mouseout="toggleSidebar(id, $event, 'mouseout')"
                                                 @mouseover="toggleSidebar(id, $event, 'mouseover')"
                                                 v-if="subCategory.children.length && subCategory.children.length > 0">
                                         </i>
 
                                     </a>
-                                    <div :class="`sub-categories sub-category-${sidebarLevel+subCategoryIndex} cursor-default sub-categories-3`">
+                                    <div :class="`sub-categories sub-category-${sidebarLevel+subCategoryIndex}-3 cursor-default sub-categories-3`">
                                         <div
                                                 class="sub-category-container ulyana"
                                                 v-if="subCategory.children && subCategory.children.length > 0">
@@ -111,11 +111,13 @@
                                                             <a
                                                                     :id="`sidebar-level-link-3-${childSubCategoryIndex}`"
                                                                     :href="`${$root.baseUrl}/${category.slug}/${subCategory.slug}/${childSubCategory.slug}`"
+                                                                    @mouseout="toggleSidebar(id, $event, 'mouseout')"
                                                                     :class="`category sub-category unset ${(childSubCategory.children.length > 0) ? 'fw6' : ''}`">
 
                                                                 <div
                                                                         class="category-icon"
-                                                                >
+                                                                        @mouseout="toggleSidebar(id, $event, 'mouseout')"
+                                                                        @mouseover="toggleSidebar(id, $event, 'mouseover')">
 
                                                                     <img
                                                                             v-if="childSubCategory.category_icon_path"
@@ -125,11 +127,12 @@
 
                                                                 <i
                                                                         class="rango-arrow-right pr15 float-right"
+                                                                        @mouseover="toggleSidebar(id, $event, 'mouseover')"
                                                                         v-if="childSubCategory.children.length && childSubCategory.children.length > 0">
                                                                 </i>
 
                                                             </a>
-                                                            <div :class="`sub-categories sub-category-${sidebarLevel+childSubCategoryIndex} cursor-default sub-categories-4`">
+                                                            <div :class="`sub-categories sub-category-${sidebarLevel+childSubCategoryIndex}-4 cursor-default sub-categories-4`">
                                                                 <div
                                                                         class="sub-category-container"
                                                                         v-if="childSubCategory.children && childSubCategory.children.length > 0">
@@ -205,23 +208,19 @@
         data: function () {
             return {
                 slicedCategories: [],
-                // sidebarLevel: Math.floor(Math.random() * 1000),
-                sidebarLevel: Math.floor(999),
+                sidebarLevel: Math.floor(Math.random() * 1000),
+                // sidebarLevel: Math.floor(999),
             }
         },
 
         watch: {
             '$root.sharedRootCategories': function (categories) {
-                console.log(categories[0]['children'][0]['children'])
                 this.formatCategories(categories);
             }
         },
 
         methods: {
             toggleSidebar: function (id, {target}, type) {
-                console.log('toggle sidebar')
-                console.log('id ' + id)
-                console.log({target})
                 if (
                     Array.from(target.classList)[0] == "main-category"
                     || Array.from(target.parentElement.classList)[0] == "main-category"
@@ -230,10 +229,8 @@
 
                     if (sidebar && sidebar.length > 0) {
                         if (type == "mouseover") {
-                            console.log('mouseover text')
                             this.show(sidebar);
                         } else if (type == "mouseout") {
-                            console.log('mouselive text')
                             this.hide(sidebar);
                         }
                     }
@@ -248,7 +245,6 @@
 
                         if (target.id || parentItem.id.match('category-')) {
                         let subCategories = $(`#${target.id ? target.id : parentItem.id} .sub-categories`);
-                        let subCategoryText = `#${target.id ? target.id : parentItem.id} .sub-categories`;
                         if (target.id.match('sidebar-level-link-2-')) {
                             subCategories = $(`#${parentItem.id} .sub-categories`);
                         }
@@ -256,40 +252,19 @@
                             subCategories = $(`#${parentItem.id} .sub-categories`);
                         }
                         if (subCategories && subCategories.length > 0) {
-                            // console.log(subCategoryText)
-                            // console.log('not empty')
-                            console.log('array from subcategory')
-                            console.log(Array.from(subCategories))
                             let subCategories1 = Array.from(subCategories)[0];
-                            let subCategories2 = $('div.sub-categories.cursor-default.sub-categories-2');
-                            let subCategories3 = $('div.sub-categories.cursor-default.sub-categories-3');
                             subCategories1 = $(subCategories1);
-                            console.log('subcategories1')
-                            console.log(subCategories1)
-                            console.log(type)
 
                             if (type == "mouseover") {
-                                // console.log('show subcategory')
                                 this.show(subCategories1);
-                                // this.remainBar('sidebar-level-999-3')
-                                // this.show(subCategories2);
-                                // this.show(subCategories3);
 
                                 let sidebarChild = subCategories1.find('.sidebar');
-                                // let sidebarChild2 = subCategories2.find('.sidebar');
-                                // let sidebarChild3 = subCategories3.find('.sidebar');
                                 this.show(sidebarChild);
-                                // this.show(sidebarChild2);
-                                // this.show(sidebarChild3);
                             }
                             else if (type == "mouseout") {
                                 this.hide(subCategories1);
-                                // this.remainBar('sidebar-level-999-3')
                             }
                         } else {
-                            console.log('empty')
-                            let subCategoryText = `#${target.id ? target.id : parentItem.id} .sub-categories`;
-                            // console.log(subCategoryText)
                             if (type == "mouseout") {
                                 let sidebar = $(`#${id}`);
                                 sidebar.hide();
@@ -302,12 +277,11 @@
             show: function (element) {
                 element.show();
                 element.mouseleave(({target}) => {
-                    // $(target.closest('.sidebar')).hide();
+                    $(target.closest('.sidebar')).hide();
                 });
             },
             remainBar: function (id) {
-                console.log('remain bar')
-                console.log(id)
+
                 let sidebar = $(`#${id}`);
                 if (sidebar && sidebar.length > 0) {
                     sidebar.show();

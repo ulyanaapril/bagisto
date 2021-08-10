@@ -1802,8 +1802,8 @@
     }
 
     .sub-categories {
-        //display: none;
-        display: block;
+        display: none;
+        //display: block;
 
         .category {
             padding: 5px 0 4px 15px;
@@ -1886,8 +1886,8 @@
 }
 
 #sidebar-level-0 {
-    //display: none;
-    display: block;
+    display: none;
+    //display: block;
     z-index: 100000;
     border-top: 1px solid $border-common;
 }
