@@ -108,12 +108,8 @@
 
                             <div class="text">
                                 <h4 class="fw6 fs18">
-                                    {{ core()->currency($cart->selected_shipping_rate->base_price) }}
-                                </h4>
-
-                                <div class="info">
                                     {{ $cart->selected_shipping_rate->method_title }}
-                                </div>
+                                </h4>
                             </div>
                         </div>
                     @endif
