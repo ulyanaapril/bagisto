@@ -713,8 +713,8 @@ class ResourceController extends Controller
         $orders = json_decode(request()->getContent(), true);
 
         try {
-            if (!empty($orders)) {
-                foreach ($orders as $item) {
+            if (!empty($orders['orders'])) {
+                foreach ($orders['orders'] as $item) {
                     $validator = Validator::make($item, [
                         'id' => 'required',
                         'status' => 'required'
