@@ -244,6 +244,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    <br>
                                 @endif
 
                             </div>
