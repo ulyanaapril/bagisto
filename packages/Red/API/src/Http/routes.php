@@ -9,7 +9,7 @@ Route::group(['prefix' => 'api-1c'], function ($router) {
         Route::get('customer/logout', 'SessionController@destroy');
 
         //Order routes
-        Route::get('orders', 'ResourceController@index')->defaults('_config', [
+        Route::get('orders', 'ResourceController@getOrders')->defaults('_config', [
             'repository' => 'Webkul\Sales\Repositories\OrderRepository',
             'resource' => 'Webkul\API\Http\Resources\Sales\Order',
             'authorization_required' => true

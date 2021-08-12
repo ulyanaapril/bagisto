@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Red\Admin\Http\GoogleTranslation;
 use Red\Admin\Models\AttributeOption;
 use Red\Admin\Models\Category;
+use Red\Admin\Models\Order;
 use Red\Admin\Repositories\AttributeOptionRepository;
 use Red\Admin\Repositories\CategoryRepository;
 use Red\Admin\Repositories\OrderRepository;
@@ -773,4 +774,55 @@ class ResourceController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     * return orders by created date and status
+     */
+    public function getOrders () {
+        $data = request()->all();
+        try {
+            $orderItems = [];
+            if (!empty($data['status']) && !empty($data['from']) && !empty($data['to'])) {
+                $from = date($data['from']);
+                $to = date($data['to']);
+
+                $orders = Order::with('items')->with('shipping_address')
+                    ->select(['id', 'status', 'customer_first_name', 'customer_last_name', 'shipping_method', 'shipping_title', 'grand_total', 'created_at', 'updated_at'])
+                    ->where(['status' => $data['status']])
+                    ->whereBetween('created_at', [$from, $to])
+                    ->get()->toArray();
+
+                foreach ($orders as $keyOrder => $order) {
+                    foreach ($order['items'] as $key => $item) {
+                        $orderItems[$key] = [
+                            'id' => $item['id'],
+                            'sku' => $item['sku'],
+                            'qty' => $item['additional']['quantity'],
+                            'product_id' => $item['additional']['product_id'],
+                        ];
+                    }
+                    if ($order['shipping_method'] == 'deliverypoint') {
+                        $orders[$keyOrder]['department_id'] = $order['shipping_address'][0]['warehouse_ref'];
+                    }
+                    unset($orders[$keyOrder]['shipping_address']);
+
+                    $orders[$keyOrder]['items'] = $orderItems;
+                }
+
+                return response()->json([
+                    'status' => 200,
+                    'orders' => $orders,
+                ], 500);
+            } else {
+                throw new \Exception('Fill params: status, from, to. DateTime format: 0000-00-00 00:00:00');
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
