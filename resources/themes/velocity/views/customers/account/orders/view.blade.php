@@ -155,15 +155,6 @@
                                                 <td>{{ core()->formatPrice($order->sub_total, $order->order_currency_code) }}</td>
                                             </tr>
 
-                                            @if ($order->haveStockableItems())
-                                                <tr>
-                                                    <td>{{ __('shop::app.customer.account.order.view.shipping-handling') }}
-                                                        <span class="dash-icon">-</span>
-                                                    </td>
-                                                    <td>{{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}</td>
-                                                </tr>
-                                            @endif
-
                                             @if ($order->base_discount_amount > 0)
                                                 <tr>
                                                     <td>{{ __('shop::app.customer.account.order.view.discount') }}
@@ -175,13 +166,6 @@
                                                     <td>{{ core()->formatPrice($order->discount_amount, $order->order_currency_code) }}</td>
                                                 </tr>
                                             @endif
-
-                                            <tr class="border-bottom">
-                                                <td>{{ __('shop::app.customer.account.order.view.tax') }}
-                                                    <span class="dash-icon">-</span>
-                                                </td>
-                                                <td>{{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}</td>
-                                            </tr>
 
                                             <tr class="fw6">
                                                 <td>{{ __('shop::app.customer.account.order.view.grand-total') }}

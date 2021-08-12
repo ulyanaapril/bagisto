@@ -432,7 +432,7 @@ return [
             'grand-total' => 'Загальний підсумок',
             'total-paid' => 'Всього сплачено',
             'total-refunded' => 'Загальна сума відшкодована',
-            'total-due' => 'Total dolg',
+            'total-due' => 'Загальний борг',
             'cancel-confirm-msg' => 'Ви впевнені, що хочете скасувати це замовлення?',
             'refund-btn-title' => 'Повернення',
             'refunds' => 'Повернення',

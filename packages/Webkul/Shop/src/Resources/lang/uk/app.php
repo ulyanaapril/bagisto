@@ -316,7 +316,7 @@ return [
                     'grand-total' => 'Загальний підсумок',
                     'total-paid' => 'Всього сплачено',
                     'total-refunded' => 'Загальна сума відшкодована',
-                    'total-due' => 'Total dolg',
+                    'total-due' => 'Загальний борг',
                     'shipping-address' => 'Адреса доставки',
                     'billing-address' => 'Адреса виставлення рахунку',
                     'shipping-method' => 'Спосіб доставки',
