@@ -782,40 +782,54 @@ class ResourceController extends Controller
     public function getOrders () {
         $data = request()->all();
         try {
-            $orderItems = [];
             if (!empty($data['status']) && !empty($data['from']) && !empty($data['to'])) {
                 $from = date($data['from']);
                 $to = date($data['to']);
 
-                $orders = Order::with('items')->with('shipping_address')
+                $orders = Order::with('all_items')->with('shipping_address')
                     ->select(['id', 'status', 'customer_first_name', 'customer_last_name', 'shipping_method', 'shipping_title', 'grand_total', 'created_at', 'updated_at'])
                     ->where(['status' => $data['status']])
                     ->whereBetween('created_at', [$from, $to])
                     ->get()->toArray();
 
+                $channelInventorySourceIds = core()->getCurrentChannel()
+                    ->inventory_sources()
+                    ->get()
+                    ->toArray();
+
+                $inventorySources = array_column($channelInventorySourceIds, null, 'id');
+
                 foreach ($orders as $keyOrder => $order) {
-                    foreach ($order['items'] as $key => $item) {
-                        $orderItems[$key] = [
-                            'id' => $item['id'],
-                            'sku' => $item['sku'],
-                            'qty' => $item['additional']['quantity'],
-                            'product_id' => $item['additional']['product_id'],
-                        ];
+                    $orderItems = [];
+                    foreach ($order['all_items'] as $key => $item) {
+                        if ($item['type'] == 'simple' && !empty($item['parent_id'])) {
+                            $orderItems[$item['parent_id']]['sku'] = $item['sku'];
+                        } else if ($item['type'] == 'configurable') {
+                            $orderItems[$item['id']]['qty'] = $item['additional']['quantity'];
+                        }
                     }
-                    if ($order['shipping_method'] == 'deliverypoint') {
-                        $orders[$keyOrder]['department_id'] = $order['shipping_address'][0]['warehouse_ref'];
+
+                    $warehouseId = $order['shipping_address'][0]['warehouse_ref'];
+                    if ($order['shipping_method'] == 'deliverypoint' && !empty($warehouseId)) {
+                        if (!empty($inventorySources[$warehouseId])) {
+                            $orders[$keyOrder]['department_code'] = $inventorySources[$warehouseId]['code'];
+                            $orders[$keyOrder]['department_name'] = $inventorySources[$warehouseId]['name'];
+                        }
+
                     }
+
+                    $orders[$keyOrder]['phone'] = $order['shipping_address'][0]['phone'];
                     unset($orders[$keyOrder]['shipping_address']);
 
-                    $orders[$keyOrder]['items'] = $orderItems;
+                    $orders[$keyOrder]['all_items'] = $orderItems;
                 }
 
                 return response()->json([
                     'status' => 200,
                     'orders' => $orders,
-                ], 500);
+                ], 200);
             } else {
-                throw new \Exception('Fill params: status, from, to. DateTime format: 0000-00-00 00:00:00');
+                throw new \Exception('Fill params: status, from, to. DateTime format: YYYY-MM-DD 00:00:00');
             }
         } catch (\Exception $e) {
             return response()->json([
