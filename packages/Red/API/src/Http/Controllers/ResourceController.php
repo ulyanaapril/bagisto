@@ -803,9 +803,9 @@ class ResourceController extends Controller
                     $orderItems = [];
                     foreach ($order['all_items'] as $key => $item) {
                         if ($item['type'] == 'simple' && !empty($item['parent_id'])) {
-                            $orderItems[$item['parent_id']]['sku'] = $item['sku'];
+                            $orderItems['_' . $item['parent_id']]['sku'] = $item['sku'];
                         } else if ($item['type'] == 'configurable') {
-                            $orderItems[$item['id']]['qty'] = (string)$item['additional']['quantity'];
+                            $orderItems['_' . $item['id']]['qty'] = (string)$item['additional']['quantity'];
                         }
                     }
 
