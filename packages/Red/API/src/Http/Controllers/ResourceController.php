@@ -805,7 +805,7 @@ class ResourceController extends Controller
                         if ($item['type'] == 'simple' && !empty($item['parent_id'])) {
                             $orderItems[$item['parent_id']]['sku'] = $item['sku'];
                         } else if ($item['type'] == 'configurable') {
-                            $orderItems[$item['id']]['qty'] = $item['additional']['quantity'];
+                            $orderItems[$item['id']]['qty'] = (string)$item['additional']['quantity'];
                         }
                     }
 
@@ -822,10 +822,11 @@ class ResourceController extends Controller
                     unset($orders[$keyOrder]['shipping_address']);
 
                     $orders[$keyOrder]['all_items'] = $orderItems;
+                    $orders[$keyOrder]['id'] = (string)$orders[$keyOrder]['id'];
                 }
 
                 return response()->json([
-                    'status' => 200,
+                    'status' => "200",
                     'orders' => $orders,
                 ], 200);
             } else {
@@ -833,7 +834,7 @@ class ResourceController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json([
-                'status' => 500,
+                'status' => "500",
                 'message' => $e->getMessage(),
             ], 500);
         }
