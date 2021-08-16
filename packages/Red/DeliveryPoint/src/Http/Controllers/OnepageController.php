@@ -8,7 +8,7 @@ use Webkul\Sales\Models\OrderAddress;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Shipping\Facades\Shipping;
-use Webkul\Payment\Facades\Payment;
+use Red\Admin\Facades\Payment;
 use Webkul\Checkout\Http\Requests\CustomerAddressForm;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Customer\Repositories\CustomerRepository;
@@ -162,7 +162,7 @@ class OnepageController extends Controller
 
         Cart::collectTotals();
 
-        return response()->json(Payment::getSupportedPaymentMethods());
+        return response()->json(Payment::getSupportedPaymentMethods($shippingMethod));
     }
 
     /**
