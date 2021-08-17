@@ -806,6 +806,7 @@ class ResourceController extends Controller
                             $orderItems['_' . $item['parent_id']]['sku'] = $item['sku'];
                         } else if ($item['type'] == 'configurable') {
                             $orderItems['_' . $item['id']]['qty'] = (string)$item['additional']['quantity'];
+                            $orderItems['_' . $item['id']]['base_total'] = (string)$item['base_total'];
                         }
                     }
 

@@ -28,26 +28,36 @@ class Payment
     /**
      * Returns all supported payment methods
      *
+     * @param $deliveryMethod
      * @return array
      */
-    public function getPaymentMethods($deliveryMethod)
+    public function getPaymentMethods($deliveryMethod = null)
     {
         $paymentMethods = [];
 
         foreach (Config::get('paymentmethods') as $paymentMethod) {
             $object = app($paymentMethod['class']);
 
-            if ($deliveryMethod == 'deliverypoint' && $object->getCode() == 'cashondelivery') {
-
-            }
-            if ($object->isAvailable()) {
-                $paymentMethods[] = [
-                    'method'       => $object->getCode(),
-                    'method_title' => $object->getTitle(),
-                    'description'  => $object->getDescription(),
-                    'sort'         => $object->getSortOrder(),
-                ];
-            }
+//            if ($deliveryMethod == 'deliverypoint') {
+//                if ($object->isAvailable() && $object->getCode() == 'cashondelivery') {
+//                    $paymentMethods[] = [
+//                        'method'       => $object->getCode(),
+//                        'method_title' => $object->getTitle(),
+//                        'description'  => $object->getDescription(),
+//                        'sort'         => $object->getSortOrder(),
+//                    ];
+//                    break;
+//                }
+//            } else {
+                if ($object->isAvailable()) {
+                    $paymentMethods[] = [
+                        'method'       => $object->getCode(),
+                        'method_title' => $object->getTitle(),
+                        'description'  => $object->getDescription(),
+                        'sort'         => $object->getSortOrder(),
+                    ];
+                }
+//            }
         }
 
         usort ($paymentMethods, function($a, $b) {
