@@ -768,6 +768,21 @@
                     eventBus.$emit('after-checkout-payment-section-added');
                 },
 
+                updated: function () {
+                    if($('input#deliverypoint').is(':checked')) {
+                        $('input:radio[name="payment[method]"]').each(function () {
+                            if (this.id !== 'cashondelivery') {
+                                $(this).prop('checked', false);
+                                $(this).closest('.col-12').hide();
+                            }
+                        });
+                    } else {
+                        $('input:radio[name="payment[method]"]').each(function () {
+                            $(this).closest('.col-12').show();
+                        });
+                    }
+                },
+
                 render: function (h) {
                     return h('div', [
                         (this.templateRender ?

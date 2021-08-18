@@ -17,6 +17,7 @@ use Throwable;
 use Webkul\Attribute\Models\Attribute;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Core\Contracts\Validations\Slug;
+use Webkul\Core\Tree;
 use Webkul\Inventory\Repositories\InventorySourceRepository;
 use Webkul\Product\Models\Product;
 use Webkul\Sales\Repositories\InvoiceRepository;
@@ -839,6 +840,42 @@ class ResourceController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    /**
+     * get delivery list
+     */
+    public function getDeliveryList () {
+        try {
+            $tree = Tree::create();
+
+            foreach (config('core') as $item) {
+                $tree->add($item);
+            }
+
+            $tree->items = core()->sortItems($tree->items);
+
+            $deliveries = \Illuminate\Support\Arr::get($tree->items, 'sales.children.carriers.children');
+
+            $deliveries = array_keys($deliveries);
+
+            $array = [];
+            foreach ($deliveries as $key => $value) {
+                $array[(string)$value] = (string)$value;
+            }
+
+            return response()->json([
+                'status' => "200",
+                'deliveries' => $array,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => "500",
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+
     }
 
 }
