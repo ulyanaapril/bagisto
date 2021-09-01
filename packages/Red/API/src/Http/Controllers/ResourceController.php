@@ -21,6 +21,8 @@ use Webkul\Core\Tree;
 use Webkul\Inventory\Repositories\InventorySourceRepository;
 use Webkul\Product\Models\Product;
 use Webkul\Sales\Repositories\InvoiceRepository;
+use Webkul\Sales\Repositories\OrderItemRepository;
+use Webkul\Sales\Repositories\ShipmentRepository;
 
 class ResourceController extends Controller
 {
@@ -71,6 +73,20 @@ class ResourceController extends Controller
     protected $invoiceRepository;
 
     /**
+     * ShipmentRepository object
+     *
+     * @var \Webkul\Sales\Repositories\ShipmentRepository
+     */
+    protected $shipmentRepository;
+
+    /**
+     * OrderItemRepository object
+     *
+     * @var \Webkul\Sales\Repositories\OrderItemRepository
+     */
+    protected $orderItemRepository;
+
+    /**
      * @var array
      */
     protected $permutation = [
@@ -103,6 +119,7 @@ class ResourceController extends Controller
      * @param OrderRepository $orderRepository
      * @param InventorySourceRepository $inventorySourceRepository
      * @param InvoiceRepository $invoiceRepository
+     * @param ShipmentRepository $shipmentRepository
      */
     public function __construct(
         CategoryRepository $categoryRepository,
@@ -111,7 +128,9 @@ class ResourceController extends Controller
         GoogleTranslation $trans,
         OrderRepository $orderRepository,
         InventorySourceRepository $inventorySourceRepository,
-        InvoiceRepository $invoiceRepository
+        InvoiceRepository $invoiceRepository,
+        OrderItemRepository $orderItemRepository,
+        ShipmentRepository $shipmentRepository
     )
     {
         $this->guard = request()->has('token') ? 'admin-api' : 'admin';
@@ -125,6 +144,8 @@ class ResourceController extends Controller
         $this->trans = $trans;
         $this->inventorySourceRepository = $inventorySourceRepository;
         $this->invoiceRepository = $invoiceRepository;
+        $this->shipmentRepository = $shipmentRepository;
+        $this->orderItemRepository = $orderItemRepository;
 
         if (isset($this->_config['authorization_required']) && $this->_config['authorization_required']) {
 
@@ -715,6 +736,16 @@ class ResourceController extends Controller
         $orders = json_decode(request()->getContent(), true);
 
         try {
+            $mainInventorySourceId = core()->getCurrentChannel()
+                ->inventory_sources()
+                ->where('code', 'BF0000001')
+                ->pluck('id')
+                ->toArray();
+
+            if (empty($mainInventorySourceId)) {
+                throw new \Exception('Inventory source with code BF0000001 not found');
+            }
+
             if (!empty($orders['orders'])) {
                 foreach ($orders['orders'] as $item) {
                     $validator = Validator::make($item, [
@@ -748,11 +779,35 @@ class ResourceController extends Controller
 
                                 if ($order->canInvoice() && $haveProductToInvoice) {
                                     $this->invoiceRepository->create(array_merge($invoices, ['order_id' => $order->id]));
+                                    $order->status = $item['status'];
                                 }
 
+                                if ($order->shipping_method == 'deliverypoint') {
+                                    if ($order->canShip()) {
+                                        $shippingItems = [];
+                                        foreach ($invoices['invoice']['items'] as $itemId => $qty) {
+                                            $shippingItems[$itemId] = [
+                                                $mainInventorySourceId[0] => $qty
+                                            ];
+                                        }
+                                        $shipping = [
+                                            'shipment' => [
+                                                'carrier_title' => '',
+                                                'track_number' => '',
+                                                'source' => $mainInventorySourceId[0],
+                                                'items' => $shippingItems
+                                            ]
+                                        ];
+                                        if (!$this->isInventoryValidate($shipping)) {
+                                            throw new \Exception('Inventory source qty is not a valid for order #' . $item['id']);
+                                        }
+                                        $this->shipmentRepository->create(array_merge($shipping, ['order_id' => $order->id]));
+
+                                        $order->status = 'completed';
+                                    }
+                                }
                             }
 
-                            $order->status = $item['status'];
                             if (!$order->save()) {
                                 throw new \Exception('Save error');
                             }
@@ -876,6 +931,65 @@ class ResourceController extends Controller
             ], 500);
         }
 
+    }
+
+    /**
+     * Checks if requested quantity available or not
+     *
+     * @param  array  $data
+     * @return bool
+     */
+    public function isInventoryValidate(&$data)
+    {
+        if (! isset($data['shipment']['items'])) {
+            return ;
+        }
+
+        $valid = false;
+
+        $inventorySourceId = $data['shipment']['source'];
+
+        foreach ($data['shipment']['items'] as $itemId => $inventorySource) {
+            if ($qty = $inventorySource[$inventorySourceId]) {
+                $orderItem = $this->orderItemRepository->find($itemId);
+
+                if ($orderItem->qty_to_ship < $qty) {
+                    return false;
+                }
+
+                if ($orderItem->getTypeInstance()->isComposite()) {
+                    foreach ($orderItem->children as $child) {
+                        if (! $child->qty_ordered) {
+                            continue;
+                        }
+
+                        $finalQty = ($child->qty_ordered / $orderItem->qty_ordered) * $qty;
+
+                        $availableQty = $child->product->inventories()
+                            ->where('inventory_source_id', $inventorySourceId)
+                            ->sum('qty');
+
+                        if ($child->qty_to_ship < $finalQty || $availableQty < $finalQty) {
+                            return false;
+                        }
+                    }
+                } else {
+                    $availableQty = $orderItem->product->inventories()
+                        ->where('inventory_source_id', $inventorySourceId)
+                        ->sum('qty');
+
+                    if ($orderItem->qty_to_ship < $qty || $availableQty < $qty) {
+                        return false;
+                    }
+                }
+
+                $valid = true;
+            } else {
+                unset($data['shipment']['items'][$itemId]);
+            }
+        }
+
+        return $valid;
     }
 
 }

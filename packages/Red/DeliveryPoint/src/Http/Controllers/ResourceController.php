@@ -63,6 +63,7 @@ class ResourceController extends Controller
         $channelInventorySources = core()->getCurrentChannel()
             ->inventory_sources()
             ->where('status', 1)
+            ->where('code', '!=', 'BF0000001')
             ->get()
             ->toArray();
 
