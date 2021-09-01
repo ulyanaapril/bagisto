@@ -774,11 +774,17 @@
                             if (this.id !== 'cashondelivery') {
                                 $(this).prop('checked', false);
                                 $(this).closest('.col-12').hide();
+                            } else {
+                                $(this).closest('.col-12').show();
                             }
                         });
                     } else {
                         $('input:radio[name="payment[method]"]').each(function () {
-                            $(this).closest('.col-12').show();
+                            if (this.id !== 'cashondelivery') {
+                                $(this).closest('.col-12').show();
+                            } else {
+                                $(this).closest('.col-12').hide();
+                            }
                         });
                     }
                 },
