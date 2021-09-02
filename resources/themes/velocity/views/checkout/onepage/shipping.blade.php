@@ -44,7 +44,7 @@
                             </div>
 
                             <div class="delivery-{{$rate->carrier}}" hidden>
-                                @if ($rate->carrier == 'np' || $rate->carrier == 'justin')
+                                @if ($rate->carrier == 'np')
                                     <div class="col-md-12">
                                         <label for="delivery-ajax-city" class="mandatory">Місто</label>
                                         <select
@@ -73,7 +73,48 @@
 
                                             <option :value="null" disabled></option>
 
-                                            <option v-for='(warehouse, index) in warehouses' :value="warehouse.id">
+                                            <option v-for='(warehouse, index) in warehousesnp' :value="warehouse.id">
+                                                @{{ warehouse.text }}
+                                            </option>
+                                        </select>
+
+                                        {{--<span class="control-error" v-if="errors.has('shipping-form.warehouse')">--}}
+                                        {{-- @{{ errors.first('shipping-form.warehouse') }}--}}
+                                        {{--</span>--}}
+                                    </div>
+                                    <br>
+
+                                @endif
+                                @if ($rate->carrier == 'justin')
+                                    <div class="col-md-12">
+                                        <label for="delivery-ajax-city" class="mandatory">Місто</label>
+                                        <select
+                                                v-validate=" this.selected_shipping_method == '{{$rate->carrier}}' ? 'required' : '' "
+                                                class="delivery-ajax-city-{{$rate->carrier}} form-control"
+                                                name="delivery-ajax-city-{{$rate->carrier}}"
+                                                @change="methodSelected()"
+                                                :v-model="city">
+                                        </select>
+                                    </div>
+                                    <br>
+                                    <div :class="`col-12 form-field ${errors.has('shipping-form.delivery-ajax-warehouse-{{$rate->carrier}}') ? 'has-error' : ''}`">
+                                        <label for="delivery-ajax-warehouse-{{$rate->carrier}}" class="mandatory">
+                                            Виберіть відділення
+                                        </label>
+
+                                        <select
+                                                type="text"
+                                                id="delivery-ajax-warehouse-{{$rate->carrier}}"
+                                                name="delivery-ajax-warehouse-{{$rate->carrier}}"
+                                                v-validate=" this.selected_shipping_method == '{{$rate->carrier}}' ? 'required' : '' "
+                                                class="form-control select2"
+                                                v-model="warehouse"
+                                                @change="validateMethod()"
+                                                data-vv-as="&quot;{{ __('shop::app.checkout.onepage.warehouse') }}&quot;">
+
+                                            <option :value="null" disabled></option>
+
+                                            <option v-for='(warehouse, index) in warehousesjustin' :value="warehouse.id">
                                                 @{{ warehouse.text }}
                                             </option>
                                         </select>
@@ -238,7 +279,7 @@
 
                                                 <option :value="null" disabled></option>
 
-                                                <option v-for='(warehouse, index) in warehouses' :value="warehouse.id">
+                                                <option v-for='(warehouse, index) in warehousesdeliverypoint' :value="warehouse.id">
                                                     @{{ warehouse.text }}
                                                 </option>
                                             </select>

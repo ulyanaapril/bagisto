@@ -639,6 +639,9 @@
                         selected_shipping_method: '',
                         first_iteration : true,
                         warehouses: [],
+                        warehousesnp: [],
+                        warehousesjustin: [],
+                        warehousesdeliverypoint: [],
                         justinCities: []
                     }
                 },
@@ -707,12 +710,17 @@
 
                         this.$http.get(warehousesUrl)
                             .then(response => {
-                                this.warehouses = response.data;
+                                this['warehouses' + this.selected_shipping_method] = response.data;
                             })
                             .catch(function (error) {});
                     },
 
                     methodSelected: function () {
+                        $('.shipping-methods').find('input:radio[name="shipping_method"]').each(function () {
+                            if($(this).prop('checked') === false) {
+                                $(this).closest('.col-12').next().attr('hidden', true)
+                            }
+                        });
                         $('.delivery-' + this.selected_shipping_method).removeAttr('hidden');
                         if (this.selected_shipping_method === 'np' || this.selected_shipping_method === 'justin') {
                             this.initSelect2();
