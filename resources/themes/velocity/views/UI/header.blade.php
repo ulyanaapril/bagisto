@@ -249,6 +249,22 @@
                                                     </div>
                                                     <span>@{{ thirdLevelCategory.name }}</span>
                                                 </a>
+                                                <ul type="none"
+                                                    v-if="thirdLevelCategory.children && thirdLevelCategory.children.length > 0">
+                                                    <li :key="`index-${Math.random()}`"
+                                                        v-for="(fourthLevelCategory, index) in thirdLevelCategory.children">
+                                                        <a class="unset"
+                                                           :href="`${$root.baseUrl}/${subCategory.slug}/${nestedSubCategory.slug}/${thirdLevelCategory.slug}/$(fourthSubCategory.slug)`">
+                                                            <div class="category-logo">
+                                                                <img
+                                                                        class="category-icon"
+                                                                        v-if="fourthLevelCategory.category_icon_path"
+                                                                        :src="`${$root.baseUrl}/storage/${fourthLevelCategory.category_icon_path}`" alt="" width="20" height="20" />
+                                                            </div>
+                                                            <span>@{{ fourthLevelCategory.name }}</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
                                             </li>
                                         </ul>
                                     </li>
