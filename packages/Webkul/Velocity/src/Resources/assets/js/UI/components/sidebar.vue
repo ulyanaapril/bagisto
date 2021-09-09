@@ -85,7 +85,9 @@
                                         </i>
 
                                     </a>
-                                    <div :class="`sub-categories sub-category-${sidebarLevel+subCategoryIndex}-3 cursor-default sub-categories-3`">
+                                    <div :class="`sub-categories sub-category-${sidebarLevel+subCategoryIndex}-3 cursor-default sub-categories-3`"
+                                         @mouseout="toggleSidebar(id, $event, 'mouseout')"
+                                         @mouseover="remainBar(`sidebar-level-${sidebarLevel+subCategoryIndex}-3`)">
                                         <div
                                                 class="sub-category-container ulyana"
                                                 v-if="subCategory.children && subCategory.children.length > 0">
@@ -132,7 +134,9 @@
                                                                 </i>
 
                                                             </a>
-                                                            <div :class="`sub-categories sub-category-${sidebarLevel+childSubCategoryIndex}-4 cursor-default sub-categories-4`">
+                                                            <div :class="`sub-categories sub-category-${sidebarLevel+childSubCategoryIndex}-4 cursor-default sub-categories-4`"
+                                                                 @mouseout="toggleSidebar(id, $event, 'mouseout')"
+                                                                 @mouseover="remainBar(`sidebar-level-${sidebarLevel+childSubCategoryIndex}-4`)">
                                                                 <div
                                                                         class="sub-category-container"
                                                                         v-if="childSubCategory.children && childSubCategory.children.length > 0">
@@ -221,6 +225,14 @@
 
         methods: {
             toggleSidebar: function (id, {target}, type) {
+                let sidebar = $(`#${id}`);
+                $(sidebar).find('.sub-categories:not(:hover)').each(function( index ) {
+                    $(this).hide()
+                });
+                $(sidebar).find('.sub-categories:hover').each(function( index ) {
+                    $(this).show()
+                });
+
                 if (
                     Array.from(target.classList)[0] == "main-category"
                     || Array.from(target.parentElement.classList)[0] == "main-category"
