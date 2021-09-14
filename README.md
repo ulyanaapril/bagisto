@@ -158,3 +158,80 @@ Thank you to all our backers! 🙏
 Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
 
 <a href="https://opencollective.com/bagisto/contribute/sponsor-7372/checkout" target="_blank"><img src="https://images.opencollective.com/static/images/become_sponsor.svg"></a>
+
+
+## Зміни в ядрі
+
+   ProductFlatRepository
+~~~
+   $attributes = app('Webkul\Attribute\Repositories\AttributeRepository')->getModel()->whereIn('id', [11])->get();//price
+   return $loadedCategoryAttributes[$category->id] = $attributes;
+   return $loadedCategoryAttributes[$category->id] = $category->filterableAttributes;
+~~~
+   
+   /home/php/projects/bagisto/packages/Webkul/Velocity/src/Helpers/AdminHelper.php
+   ~~~
+   if (! $category instanceof \Webkul\Category\Contracts\Category) {
+               $id = !empty($category->id) ? $category->id : $category;
+               $category = $this->categoryRepository->findOrFail($id);
+   }
+   
+   ~~~
+   /home/php/projects/bagisto/packages/Webkul/Admin/src/Http/Controllers/Sales/OrderController.php
+   ~~~
+   public function view($id)
+       {
+           $order = $this->orderRepository->findOrFail($id);
+        		try { ... } 
+   
+   
+        		nova poshta class 922
+        		закоментувала
+        		//        if (!($counterparty['RecipientAddress'] OR $counterparty['CityRef']))
+   			//            throw new \Exception('RecipientAddress is required filed for recipient');
+   
+~~~
+змінила у файлі /home/php/projects/bagisto/packages/Webkul/Velocity/src/Http/Controllers/Shop/ShopController.php
+~~~
+   
+               private function getCategoryFilteredData($category)
+       {
+           $formattedChildCategory = [];
+   
+           foreach ($category->children as $child) {
+               array_push($formattedChildCategory, $this->getCategoryFilteredData($child));
+           }
+   
+           return [
+               'id'                 => $category->id,
+               'slug'               => $category->slug,
+               'name'               => $category->name,
+               'children'           => $formattedChildCategory,
+               'category_icon_path' => $category->category_icon_path,
+               'image'              => $category->image
+           ];
+       }
+   
+~~~
+на
+~~~
+   
+       private function getCategoryFilteredData($category)
+       {
+           $formattedChildCategory = [];
+   
+           foreach ($category->children as $child) {
+               array_push($formattedChildCategory, $this->getCategoryFilteredData($child));
+           }
+   
+           return [
+               'id'                 => $category->id,
+               'parent_id'           => $category->parent_id,//added
+               'slug'               => $category->slug,
+               'name'               => $category->name,
+               'children'           => $formattedChildCategory,
+               'category_icon_path' => $category->category_icon_path,
+               'image'              => $category->image
+           ];
+       }
+~~~
