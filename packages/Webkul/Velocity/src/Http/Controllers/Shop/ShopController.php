@@ -172,6 +172,7 @@ class ShopController extends Controller
 
         return [
             'id'                 => $category->id,
+            'parent_id'           => $category->parent_id,
             'slug'               => $category->slug,
             'name'               => $category->name,
             'children'           => $formattedChildCategory,

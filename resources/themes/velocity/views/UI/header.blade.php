@@ -77,7 +77,7 @@
                                             <span v-text="category.name"></span>
                                         </a>
 
-                                        <i class="rango-arrow-right" @click="toggleSubcategories(index, $event)"></i>
+                                        <i class="rango-arrow-right" @click="toggleSubcategories(index, $event, rootCategoriesCollection)"></i>
                                     </li>
                                 </ul>
 
@@ -202,7 +202,7 @@
 
                             <div class="wrapper" v-else-if="subCategory">
                                 <div class="drawer-section">
-                                    <i class="rango-arrow-left fs24 text-down-4" @click="toggleSubcategories('root')"></i>
+                                    <i class="rango-arrow-left fs24 text-down-4" @click="toggleUnderCategory(subCategory['parent_id'], $event, subCategory)"></i>
 
                                     <h4 class="display-inbl">@{{ subCategory.name }}</h4>
 
@@ -218,7 +218,7 @@
 
                                         <a
                                             class="unset"
-                                            :href="`${$root.baseUrl}/${subCategory.slug}/${nestedSubCategory.slug}`">
+                                            :href="getCategorySlug(nestedSubCategory.id, nestedSubCategory.slug, nestedSubCategory)">
 
                                             <div class="category-logo">
                                                 <img
@@ -228,45 +228,7 @@
                                             </div>
                                             <span>@{{ nestedSubCategory.name }}</span>
                                         </a>
-
-                                        <ul
-                                            type="none"
-                                            class="nested-category"
-                                            v-if="nestedSubCategory.children && nestedSubCategory.children.length > 0">
-
-                                            <li
-                                                :key="`index-${Math.random()}`"
-                                                v-for="(thirdLevelCategory, index) in nestedSubCategory.children">
-                                                <a
-                                                    class="unset"
-                                                    :href="`${$root.baseUrl}/${subCategory.slug}/${nestedSubCategory.slug}/${thirdLevelCategory.slug}`">
-
-                                                    <div class="category-logo">
-                                                        <img
-                                                            class="category-icon"
-                                                            v-if="thirdLevelCategory.category_icon_path"
-                                                            :src="`${$root.baseUrl}/storage/${thirdLevelCategory.category_icon_path}`" alt="" width="20" height="20" />
-                                                    </div>
-                                                    <span>@{{ thirdLevelCategory.name }}</span>
-                                                </a>
-                                                <ul type="none"
-                                                    v-if="thirdLevelCategory.children && thirdLevelCategory.children.length > 0">
-                                                    <li :key="`index-${Math.random()}`"
-                                                        v-for="(fourthLevelCategory, index) in thirdLevelCategory.children">
-                                                        <a class="unset"
-                                                           :href="`${$root.baseUrl}/${subCategory.slug}/${nestedSubCategory.slug}/${thirdLevelCategory.slug}/$(fourthSubCategory.slug)`">
-                                                            <div class="category-logo">
-                                                                <img
-                                                                        class="category-icon"
-                                                                        v-if="fourthLevelCategory.category_icon_path"
-                                                                        :src="`${$root.baseUrl}/storage/${fourthLevelCategory.category_icon_path}`" alt="" width="20" height="20" />
-                                                            </div>
-                                                            <span>@{{ fourthLevelCategory.name }}</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </li>
-                                        </ul>
+                                        <i v-if="nestedSubCategory.children && nestedSubCategory.children.length > 0" class="rango-arrow-right" @click="toggleSubcategories(index, $event, subCategory.children)"></i>
                                     </li>
                                 </ul>
                             </div>
@@ -464,6 +426,7 @@
                         'cartItemsCount': '{{ $cartItemsCount }}',
                         'rootCategoriesCollection': this.$root.sharedRootCategories,
                         'isCustomer': '{{ auth()->guard('customer')->user() ? "true" : "false" }}' == "true",
+                        'categorySlug' : ''
                     }
                 },
 
@@ -521,17 +484,50 @@
                         this.rootCategories = true;
                     },
 
-                    toggleSubcategories: function (index, event) {
-                        if (index == "root") {
+                    toggleSubcategories: function (index, event, categories) {
+                            event.preventDefault();
+                            this.rootCategories = false;
+                            this.subCategory = categories[index];
+                    },
+                    getCategorySlug: function (id, slug, node) {
+                        var t = this;
+                        var fullSlug = '';
+                        function recurse(id, slug, node) {
+                            root = t.rootCategoriesCollection;
+                            node = t.getParent(root, node.parent_id);
+                            if (node) {
+                                slug = node.slug + '/' + slug;
+                                recurse(node.id, slug, node);
+                            } else {
+                                fullSlug = t.$root.baseUrl + '/' + slug
+                            }
+
+                        }
+                        recurse(id, slug, node);
+                        return fullSlug;
+                    },
+                    toggleUnderCategory: function (index, event, categories) {
+                        event.preventDefault();
+                        let category = this.getParent(this.rootCategoriesCollection, index);
+                        if (!category) {
                             this.rootCategories = true;
                             this.subCategory = false;
                         } else {
-                            event.preventDefault();
-
-                            let categories = this.$root.sharedRootCategories;
-                            this.rootCategories = false;
-                            this.subCategory = categories[index];
+                            this.subCategory = category;
                         }
+                    },
+                    getParent: function (root, id) {
+                        if (id == null) {
+                            return null;
+                        }
+                        var i, node;
+                        for (var i = 0; i < root.length; i++) {
+                            node = root[i];
+                            if (node.id === id || node.children && (node = this.getParent(node.children, id))) {
+                                return node;
+                            }
+                        }
+                        return null;
                     },
 
                     toggleMetaInfo: function (metaKey) {
