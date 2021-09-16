@@ -235,3 +235,20 @@ Support this project by becoming a sponsor. Your logo will show up here with a l
            ];
        }
 ~~~
+/home/php/projects/bagisto/packages/Webkul/Product/src/CacheFilters/Medium.php
+~~~
+/**
+     * @param  \Intervention\Image\Image  $image
+     * @return \Intervention\Image\Image
+     */
+    public function applyFilter(Image $image)
+    {
+
+        $image->resize(280, 350, function ($constraint) {
+            $constraint->aspectRatio();
+        });
+
+        return $image->resizeCanvas(300, 300, 'center', false, '#fff');
+
+    }
+~~~
