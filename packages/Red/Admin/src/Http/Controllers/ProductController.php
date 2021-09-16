@@ -281,6 +281,13 @@ class ProductController extends Controller
                         }
                     }
 
+                    $productImages = [];
+                    foreach ($product->images as $image) {
+                        $productImages[$image->id] = '';
+                    }
+
+                    $data['images'] = $productImages;
+
                     $product = $this->productRepository->update($data, $id);
                 }
             }
