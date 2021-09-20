@@ -17,8 +17,7 @@ class NovaPoshta
      * @var string $key
      * @see https://my.novaposhta.ua/settings/index#apikeys
      */
-//    protected $key = '920af0b399119755cbca360907f4fa60';
-    protected $key = 'ee81479912564e82b2567d94d4004657';
+    protected $key;
 
     /**
      * @var bool $throwErrors Throw exceptions when in response is error
@@ -61,22 +60,9 @@ class NovaPoshta
     protected $params;
 
     /**
-     * Default constructor
-     *
-     * @param string $key NovaPoshta API key
-     * @param string $language Default Language
-     * @param bool $throwErrors Throw request errors as Exceptions
-     * @param bool $connectionType Connection type (curl | file_get_contents)
-     * @return NovaPoshtaApi2
+     * NovaPoshta constructor.
+     * @param string $language
      */
-    /*function __construct($key, $language = 'ru', $throwErrors = FALSE, $connectionType = 'curl') {
-        $this->throwErrors = $throwErrors;
-        return $this
-            ->setKey($key)
-            ->setLanguage($language)
-            ->setConnectionType($connectionType)
-            ->model('Common');
-    }*/
     function __construct($language = 'ru')
     {
         return $this->setLanguage($language)->setKey(env('NP_KEY'));

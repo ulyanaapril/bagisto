@@ -19,21 +19,21 @@ class JustinClass
      *
      * @var string
      */
-    protected $login = 'RedUA1'; // гудзь - RedUA1 //Цибуля - redUA
+    protected $login;
 
     /**
      * API pass
      *
      * @var string
      */
-    protected $pass = 'OsiMaNaT'; // гудзь - OsiMaNaT //Цибуля - TEdmAtIc
+    protected $pass;
 
     /**
      * API account key
      *
      * @var string
      */
-    protected $key = '08d0c6b5-1d89-11ea-abe1-0050569b41a9';// гудзь - 08d0c6b5-1d89-11ea-abe1-0050569b41a9 //Цибуля - 851e2b3e-ffd5-11e9-abd8-0050569b9e7e
+    protected $key;
 
     /**
      * Response result lang
@@ -99,32 +99,12 @@ class JustinClass
     protected $throwErrors = false;
 
     /**
-     * JustIn constructor.
-     *
-     * @param string $login
-     * @param string $pass
-     * @param string $key
-     * @param string $lang
-     * @param bool $throwErrors
-     * @param string $connectionType
+     * JustinClass constructor.
      */
-    /*public function __construct($login, $pass, $key = '', $lang = 'UA', $throwErrors = false, $connectionType = 'curl')
-    {
-        $this->login = $login;
-        $this->pass = $pass;
-        $this->key = $key;
-        $this->lang = strtoupper($lang);
-        $this->throwErrors = (boolean)$throwErrors;
-        $this->apiConnectionMethod = $connectionType;
-    }*/
-    public function __construct($login = false, $pass = false, $key = '')
-    {
-        if($login){ $this->login = $login;}
-        if($pass){$this->pass = $pass;}
-        if($key){$this->key = $key;}
-       // $this->lang = strtoupper($lang);
-       // $this->throwErrors = (boolean)$throwErrors;
-       // $this->apiConnectionMethod = $connectionType;
+    public function __construct() {
+        $this->login = env('JUSTIN_LOGIN', '');
+        $this->pass = env('JUSTIN_PASSWORD', '');
+        $this->key = env('JUSTIN_KEY', '');
     }
 
     /**

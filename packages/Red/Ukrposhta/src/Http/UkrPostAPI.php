@@ -7,14 +7,13 @@ namespace Red\Ukrposhta\Http;
  */
 class UkrPostAPI
 {
-    protected $bearer = '957aaecc-ed29-3c01-944f-0407dbd795ef';
-    //  protected $BEARERSTATUS = '283c9d9a-2373-367c-9fcb-85cb16b35ffb';
-    protected $token = '38c9400b-71c2-4acb-91db-a338c3030e90';
-    protected $uuid = 'ce4e19d6-6a4f-4f1f-a8c4-5b4a1f9cde9a';
+    protected $bearer;
+    protected $token;
+    protected $uuid;
     protected $throwErrors = FALSE;
     protected $type = 'POST';
-    protected $sender_uuid = 'a3f4232c-0a5b-4cb2-8d06-2ce18dfcbd60';
-    protected $senderAddressId = '15889152';
+    protected $sender_uuid;
+    protected $senderAddressId;
 
     /**
      * @var string $format Format of returned data - array, json, xml
@@ -39,7 +38,11 @@ class UkrPostAPI
     }*/
     function __construct()
     {
-
+        $this->bearer = env('UKRPOST_BEARER', '');
+        $this->token = env('UKRPOST_TOKEN', '');
+        $this->uuid = env('UKRPOST_UUID', '');
+        $this->sender_uuid = env('UKRPOST_SENDER_UUID', '');
+        $this->senderAddressId = env('UKRPOST_SENDER_ADDRESS_ID', '');
     }
 
     function setBearer($BEARER)
