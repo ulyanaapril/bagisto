@@ -60,9 +60,9 @@ php artisan cache:clear
 якщо картинки не відображаються після завантаження(видаляться всі зображення, використовувати тільки при розгорненні на новому сервері):
 
 1. Спочатку видаляємо PUBLIC папку/файл з root/storage/app/. 
-2. Потім видаляємо STORAGE папку з root/publc. 
-3. Потім спочатку створюємо PUBLIC папку в root/storage/app. 
-4. Потім виконуємо php artisan storage:link.
+2. Видаляємо STORAGE папку з root/publc. 
+3. Створюємо PUBLIC папку в root/storage/app. 
+4. Виконуємо php artisan storage:link.
 5. Виконуємо chmod -R 777 storage щоб надати доступ до створеної папки.
 
 * Запускаємо локально сервер php artisan serve
