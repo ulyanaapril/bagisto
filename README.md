@@ -20,43 +20,6 @@
 6. [Security Vulnerabilities](#security-vulnerabilities)
 7. [Miscellaneous](#miscellaneous)
 
-### Introduction
-
-[Bagisto](https://www.bagisto.com) is a hand tailored E-Commerce framework built on some of the hottest opensource technologies
-such as [Laravel](https://laravel.com) (a [PHP](https://secure.php.net/) framework) and [Vue.js](https://vuejs.org)
-a progressive Javascript framework.
-
-**Bagisto can help you to cut down your time, cost, and workforce for building online stores or migrating from physical stores
-to the ever demanding online world. Your business -- whether small or huge -- can benefit. And it's very simple to set it up.**
-
-**Read our documentation: [Bagisto Docs](https://devdocs.bagisto.com/)**
-
-**We also have a forum for any type of concerns, feature requests, or discussions. Please visit: [Bagisto Forums](https://forums.bagisto.com/)**
-
-# Visit our live [Demo](https://demo.bagisto.com)
-
-It packs in lots of features that will allow your E-Commerce business to scale in no time:
-
-* Multiple Channels, Locale, Currencies.
-* Built-in Access Control Layer.
-* Beautiful and Responsive Storefront.
-* Descriptive and Simple Admin Panel.
-* Admin Dashboard.
-* Custom Attributes.
-* Built on Modular Approach.
-* Support for Multiple Store Themes.
-* Multistore Inventory System.
-* Orders Management System.
-* Customer Cart, Wishlist, Product Reviews.
-* Simple, Configurable, Group, Bundle, Downloadable and Virtual Products.
-* Price rules (Discount) inbuilt.
-* Theme (Velocity).
-* CMS Pages.
-* Check out [these features and more](https://bagisto.com/features/).
-
-**For Developers**:
-Take advantage of two of the hottest frameworks used in this project -- Laravel and Vue.js -- both of which have been used in Bagisto.
-
 ### Documentation
 
 #### Bagisto Documentation [https://devdocs.bagisto.com](https://devdocs.bagisto.com)
@@ -71,93 +34,62 @@ Take advantage of two of the hottest frameworks used in this project -- Laravel 
 * **Node**: 8.11.3 LTS or higher.
 * **Composer**: 1.6.5 or higher.
 
-### Installation and Configuration
+## Розгортання проекту
 
-**1. You can install Bagisto by using the GUI installer.**
-
-##### a. Download zip from the link below:
-
-[Download the latest release](https://github.com/bagisto/bagisto/releases/latest)
-
-##### b. Extract the contents of zip and execute the project in your browser:
-
+* Склонити проект з репозиторію.
 ~~~
-http(s)://example.com
+git clone https://gitlab.com/ulyanaapril/bagisto.git
 ~~~
 
-**2. Or you can install Bagisto from your console.**
+* Створити файл .env з вмістом зі зразка
 
-##### Execute these commands below, in order
-
+* Розгорнути платформу на новому сервері: обнулить базу даних і заповнить її демо даними. Всі дані товару та користувачі будуть видалені.
+!!!Не виконувати на робочій базі
 ~~~
-1. composer create-project bagisto/bagisto
-~~~
-
-~~~
-2. php artisan bagisto:install
+php artisan bagisto:install
 ~~~
 
-**To execute Bagisto**:
-
-##### On server:
-
-Warning: Before going into production mode we recommend you uninstall developer dependencies.
-In order to do that, run the command below:
-
+* На робочій базі для встановлення залежностей виконати
+~~~
 > composer install --no-dev
-
-~~~
-Open the specified entry point in your hosts file in your browser or make an entry in hosts file if not done.
 ~~~
 
-##### On local:
-
+* Запустити якщо на сервері помилка про відсутність модуля. 
+Тільки для установки платформи на новому сервері
 ~~~
-php artisan serve
+apt-get install php7.4-intl
 ~~~
 
+* Очистка і генерація кешу і конфігурації. Запустити після внесення змін до коду
+~~~
+php artisan config:cache
+php artisan config:clear
+php artisan cache:clear
+~~~
 
-**How to log in as admin:**
+* Після розгорнення проекту обновляємо символічні посилання для зображень товару, 
+якщо картинки не відображаються після завантаження(видаляться всі зображення, використовувати тільки при розгорненні на новому сервері):
 
-> *http(s)://example.com/admin/login*
+1. Спочатку видаляємо PUBLIC папку/файл з root/storage/app/. 
+2. Потім видаляємо STORAGE папку з root/publc. 
+3. Потім спочатку створюємо PUBLIC папку в root/storage/app. 
+4. Потім виконуємо php artisan storage:link.
+5. Виконуємо chmod -R 777 storage щоб надати доступ до створеної папки.
 
+* Якщо відбулись зміни в компоненті vue генеруємо публічні файли. 
+Тільки для локального сервера!!! Потрібні згенеровані файли комітимо на прод сервер. 
+~~~
+npm run prod
+php artisan vendor:publish --force
+~~~
+
+* Запускаємо локально сервер php artisan serve
+
+* Вхід в адмінку при стандартному розгортанні проекту
 ~~~
 email:admin@example.com
 password:admin123
 ~~~
-
-**How to log in as customer:**
-
-*You can directly register as customer and then login.*
-
-> *http(s)://example.com/customer/register*
-
-
-### License
-Bagisto is a truly opensource E-Commerce framework which will always be free under the [MIT License](https://github.com/bagisto/bagisto/blob/master/LICENSE).
-
-### Security Vulnerabilities
-Please don't disclose security vulnerabilities publicly. If you find any security vulnerability in Bagisto then please email us: mailto:support@bagisto.com.
-
-### Miscellaneous
-
-#### Contributors
-
-This project is on [Open Collective](https://opencollective.com/bagisto) and it exists thanks to the people who contribute.
-
-<a href="https://github.com/bagisto/bagisto/graphs/contributors"><img src="https://opencollective.com/bagisto/contributors.svg?width=890&button=false"/></a>
-
-#### Backers
-
-Thank you to all our backers! 🙏
-
-<a href="https://opencollective.com/bagisto#contributors" target="_blank"><img src="https://opencollective.com/bagisto/backers.svg?width=890"></a>
-
-#### Sponsors
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website.
-
-<a href="https://opencollective.com/bagisto/contribute/sponsor-7372/checkout" target="_blank"><img src="https://images.opencollective.com/static/images/become_sponsor.svg"></a>
 
 
 ## Зміни в ядрі
