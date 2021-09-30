@@ -1,32 +1,189 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <div class="error-container" style="width: 100%; display: flex; justify-content: center;">
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="title" content="ScoopThemes">
+    <meta name="ROBOTS" content="Bootstrap 3 Themes, Responsive Themes, Bootstrap 3 Responsive, Wordpress Themes, Clean Themes, Modern Themes, Flat Themes, Flat UI, UI Design, UX Design, Web design, responsive bootstrap, Jquery Plugins, Free Plugins, Premium Bootstrap themes, Bootstrap 3, Premium Web Templates, Bootstrap Templates, Bootstrap Responsive Templates, Admin, Dashboard, Admin Templates, Admin Responsive, Admin responsive themes">
+    <meta name="description" content="Solutions For Web Developers Form ( Web Templates, Web Themes, Jquery Plugins, UX Design.. ) Whatever They Need.">
+    <meta name="abstract" content="Solutions For Web Developers Form ( Web Templates, Web Themes, Jquery Plugins, UX Design.. ) Whatever They Need.">
 
-        <div class="wrapper" style="display: flex; height: 60vh; width: 100%;
-            justify-content: start; align-items: center;">
+    <meta name="author" content="www.scoopthemes.com">
+    <meta name="publisher" content="www.scoopthemes.com">
+    <meta name="copyright" content="www.scoopthemes.com">
+    <meta name="revisit-after" content="2 days">
+    <link rel="shortcut icon" href="/gug/img/favicon.png">
 
-            <div class="error-box"  style="width: 50%">
+    <title>Scoop Themes | Coming Soon Template</title>
 
-                <div class="error-title" style="font-size: 100px;color: #5E5E5E">
-                    {{ __('admin::app.error.in-maitainace') }}
-                </div>
+    <!-- Bootstrap -->
+    <link href="/gug/css/bootstrap.css" rel="stylesheet">
+    <link href="/gug/css/font-awesome.css" rel="stylesheet">
+    <link href="/gug/css/bootstrap-theme.css" rel="stylesheet">
+    <link rel="stylesheet" href="/gug/css/animations.css">
 
-                <div class="error-messgae" style="font-size: 24px;color: #5E5E5E">
-                    {{ core()->getCurrentChannel()->maintenance_mode_text ?: __('admin::app.error.right-back') }}
-                </div>
+    <!-- siimple style -->
+    <link href="/gug/css/style.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .home-ad{
+            position: fixed;
+            right: 20px;
+            top:200px;
+            border: 1px solid #f2f2f2;
+            background: rgb(255, 255, 255);
+            border-radius: 0;
+            z-index: 9999;
+        }
+        .home-ad .close{
+            float: right;
+            color: #FFF;
+            background: #6B6B6B;
+            width: 20px;
+            height: 20px;
+            line-height: 16px;
+            display: inline-block;
+            font-size: 12px;
+            font-weight: normal;
+            text-align: center;
+            text-decoration: none;
+            text-shadow: none;
+            margin-bottom: 5px;
+        }
+        .home-ad div#carbonads {
+            padding: 10px;
+            max-width: 150px;
+        }
+        .home-ad div#carbonads a.carbon-img {
+            display: inline-block;
+            float: left;
+        }
+        .home-ad div#carbonads .carbon-wrap:after {
+            content: "";
+            display: block;
+            clear: both;
+        }
+        .home-ad div#carbonads .carbon-text {
+            font-size: 12px;
+            text-align: left;
+            color: #333;
+            display: block;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            clear: both;
+        }
+        .home-ad div#carbonads .carbon-text:hover {
+            text-decoration: none;
+        }
+        .home-ad div#carbonads .carbon-poweredby {
+            font-size: 75%;
+            color: #bebebe;
+        }
+    </style>
+    <script id="_carbonads_projs" type="text/javascript" src="https://srv.carbonads.net/ads/CKYIK2JE.json?segment=placement:scoopthemes&amp;callback=_carbonads_go"></script></head>
+
+<body style="">
+
+<div class="cloud floating">
+    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+</div>
+
+<div class="cloud pos1 fliped floating">
+    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+</div>
+
+<div class="cloud pos2 floating">
+    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+</div>
+
+<div class="cloud pos3 fliped floating">
+    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+</div>
+
+
+<div id="wrapper" style="height: 505px;">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-12">
+                <img src="/gug/img/logo.png" alt="Scoop Themes Logo">
+                <br>
+                <br>
+                <h2 class="subtitle">Ми працюємо над чимось надзвичайним для вас. Скоро повернемось.</h2>
+                <br>
+                <p>management@red.ua</p>
+                <br>
             </div>
-
-            <div class="error-graphic icon-404" style="margin-left: 10% ;"></div>
-
+            <div class="col-sm-12 align-center">
+                <ul class="social-network social-circle">
+                    <li><a href="https://uk-ua.facebook.com/lifestyle.red.ua" class="icoFacebook" title="Facebook"><i class="fa fa-facebook"></i></a>
+                    </li>
+                </ul>
+            </div>
         </div>
-
+        <div class="row">
+            <div class="col-lg-6 col-lg-offset-3">
+                <p class="copyright">Всі права © 2021 - <a href="https://www.red.ua/">red.ua</a>
+                </p>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="http://downloads.mailchimp.com/js/jquery.form-n-validate.js"></script>
+<script>
+
+    $(document).ready( function () {
+        $('#wrapper').height($(document).height());
+        // I only have one form on the page but you can be more specific if need be.
+        var $form = $('form');
+
+        if ( $form.length > 0 ) {
+            $('form input[type="submit"]').bind('click', function ( event ) {
+                if ( event ) event.preventDefault();
+                // validate_input() is a validation function I wrote, you'll have to substitute this with your own.
+                if ( $form.validate() ) { register($form); }
+            });
+        }
+
+        $('.home-ad .close').on('click', function(){
+            $(this).parent().toggle('fast');
+        });
+    });
+
+    function appendResult(userText , className, iconClass){
+        var resultHTML = "<div class='stretchLeft result "+ className + "'>" + userText + " <span class='fa fa-" + iconClass + "'></span>" + "</div>";
+        $('body').append(resultHTML);
+        $('.result').delay(10000).fadeOut('1000');
+    }
+
+
+    function register($form) {
+        $.ajax({
+            type: $form.attr('method'),
+            url: $form.attr('action'),
+            data: $form.serialize(),
+            cache       : false,
+            dataType    : 'json',
+            contentType: "application/json; charset=utf-8",
+            error       : function(err) { alert("Could not connect to the registration server. Please try again later."); },
+            success     : function(data) {
+                if (data.result != "success") {
+                    appendResult('Wrong Email Or You Are Already Registered, Try Again', 'error', 'exclamation');
+                } else {
+                    // It worked, carry on...
+                    appendResult('Successful, Check Your Email For Confirmation ', 'success', 'check');
+                }
+            }
+        });
+    }
+</script>
+
+
+
+
+</body></html>
