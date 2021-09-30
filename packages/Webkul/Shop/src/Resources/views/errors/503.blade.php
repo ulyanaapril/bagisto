@@ -1,18 +1,18 @@
 <html lang="en"><head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="title" content="ScoopThemes">
-    <meta name="ROBOTS" content="Bootstrap 3 Themes, Responsive Themes, Bootstrap 3 Responsive, Wordpress Themes, Clean Themes, Modern Themes, Flat Themes, Flat UI, UI Design, UX Design, Web design, responsive bootstrap, Jquery Plugins, Free Plugins, Premium Bootstrap themes, Bootstrap 3, Premium Web Templates, Bootstrap Templates, Bootstrap Responsive Templates, Admin, Dashboard, Admin Templates, Admin Responsive, Admin responsive themes">
-    <meta name="description" content="Solutions For Web Developers Form ( Web Templates, Web Themes, Jquery Plugins, UX Design.. ) Whatever They Need.">
-    <meta name="abstract" content="Solutions For Web Developers Form ( Web Templates, Web Themes, Jquery Plugins, UX Design.. ) Whatever They Need.">
+    <meta name="title" content="RED">
+    <meta name="ROBOTS" content="RED">
+    <meta name="description" content="RED">
+    <meta name="abstract" content="RED">
 
-    <meta name="author" content="www.scoopthemes.com">
-    <meta name="publisher" content="www.scoopthemes.com">
-    <meta name="copyright" content="www.scoopthemes.com">
+    <meta name="author" content="red.ua">
+    <meta name="publisher" content="red.ua">
+    <meta name="copyright" content="red.ua">
     <meta name="revisit-after" content="2 days">
     <link rel="shortcut icon" href="/gug/img/favicon.png">
 
-    <title>Scoop Themes | Coming Soon Template</title>
+    <title>RED.UA - магазин модной одежды</title>
 
     <!-- Bootstrap -->
     <link href="/gug/css/bootstrap.css" rel="stylesheet">
@@ -88,19 +88,19 @@
 <body style="">
 
 <div class="cloud floating">
-    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+    <img src="/gug/img/cloud.png" alt="RED">
 </div>
 
 <div class="cloud pos1 fliped floating">
-    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+    <img src="/gug/img/cloud.png" alt="RED">
 </div>
 
 <div class="cloud pos2 floating">
-    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+    <img src="/gug/img/cloud.png" alt="RED">
 </div>
 
 <div class="cloud pos3 fliped floating">
-    <img src="/gug/img/cloud.png" alt="Scoop Themes">
+    <img src="/gug/img/cloud.png" alt="RED">
 </div>
 
 
@@ -108,7 +108,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12">
-                <img src="/gug/img/logo.png" alt="Scoop Themes Logo">
+                <img src="/gug/img/logo.png" alt="RED Logo">
                 <br>
                 <br>
                 <h2 class="subtitle">Ми працюємо над чимось надзвичайним для вас. Скоро повернемось.</h2>
